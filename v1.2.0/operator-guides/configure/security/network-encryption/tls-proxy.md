@@ -1,84 +1,85 @@
 ---
-title: Enable TLS on StreamNative Platform components
+title: 在 StreamNative Platform 组件上启用 TLS
 id: tls-proxy
 category: operator-guides
 ---
 
-StreamNative Platform supports Transport Layer Security (TLS), an industry-standard encryption protocol, to protect network communications of StreamNative Platform components.
+StreamNative Platform 支持传输层安全 (TLS)，一种行业标准的加密协议，以保护 StreamNative Platform 组件的网络通信。
 
-TLS relies on keys and certificates to establish trusted connections. You can perform TLS termination at Pulsar proxy, control center and KoP broker. This section describes how to enable TLS encryption for StreamNative Platform components.
+TLS 依赖于 key 和证书来建立可信连接。可以在 Pulsar 代理、控制中心和 KoP broker 处执行 TLS 终止。本节介绍如何为 StreamNative Platform 组件启用 TLS 加密。
 
-To enable TLS encryption, StreamNative Platform supports the following mechanisms:
+为了启用 TLS 加密，StreamNative Platform 支持以下机制：
 
-- Auto-generated certificates: [cert-manager](https://cert-manager.io/docs/) generates the certificates automatically.
-- Manually-generated certificates: Users generate the private key, public key and certificate authority.
+- 自动生成证书：[cert-manager](https://cert-manager.io/docs/) 自动生成证书。
+- 手动生成证书：用户生成私钥、公钥和证书授权。
 
-For scenarios where you don’t need to use your own server certificates, we recommend you use the auto-generated certificate capability.
+对于不需要使用自己的服务器证书的场景，我们建议使用自动生成证书功能。
 
-# Enable TLS with cert-manager
+# 使用 cert-manager 启用 TLS
 
-Cert-manager adds certificates and certificate issuers as resource types in Kubernetes clusters, and simplifies the process of obtaining, renewing and using those certificates.
+Cert-manager 将证书和证书颁发者作为资源类型添加到 Kubernetes 集群中，并简化了获取、更新和使用这些证书的过程。
 
-In StreamNative Platform, cert-manager supports issuing certificates from the internal issuer and the public issuer. The following section describes how to generate certificates with an internal issuer and a public issuer, and then enable TLS encryption. 
+StreamNative 平台中，cert-manager 支持从内部发布者和公共发布者发布证书。以下部分介绍如何使用内部发布者和公共发布者生成证书，然后启用 TLS 加密。
 
 ::: tabs
 
- @@@ Internal issuer
+ @@@ 内部发布者
 
-To generate certificates with internal issuer (self-signed), complete the following steps.
+使用内部发布者生成证书（自签名），请按如下步骤操作。
 
-1. Create the password secret for JKS cert.
+1. 为 JKS  cert 创建密码密钥。 
 
 	```
 	kubectl create secret generic cert-jks-passwd --from-literal=password=passwd -n KUBERNETES_NAMESPACE
 	```
 
-2. Enable TLS on the Pulsar proxy. You can set `tls`, `proxy`, `internal_issuer` and related parameters to `true` in your YAML file, shown as follows.
+2. 在 Pulsar 代理上启用 TLS。可以在 YAML 文件中将 `tls`、`proxy`、`internal_issuer` 和相关参数设置为 `true`，如下所示。
 
 	```
 	tls:
+
  	 enabled: true
-  	 proxy:
-   	   enabled: true
-
-	certs:
+ 	 proxy:
+ 	   enabled: true
+ 	
+ 	certs:
  	 internal_issuer:
-  	   enabled: true
-
-	broker:
-	  # set the domain for accessing KoP 
-	  advertisedDomain: "messaging.pulsar.example.local"
+ 	   enabled: true
+ 	
+ 	broker:
+ 	  # set the domain for accessing KoP 
+ 	  advertisedDomain: "messaging.pulsar.example.local"
  	  kop:
-  	    enabled: true
-  	    tls:
-    	  enabled: true
-
-	domain:
-  	  enabled: true
-  	  suffix: pulsar.example.local
-
-	ingress:
+ 	    enabled: true
+ 	    tls:
+ 		  enabled: true
+ 	
+ 	domain:
+ 	  enabled: true
+ 	  suffix: pulsar.example.local
+ 	
+ 	ingress:
  	  proxy:
-   	  enabled: true
-   	  tls:
-   	    enabled: true
-  	control_center:
-   	  enabled: true
-   	  tls:
-   	    enabled: true
-    ```
+ 	  enabled: true
+ 	  tls:
+ 	    enabled: true
+ 	control_center:
+ 	  enabled: true
+ 	  tls:
+ 	    enabled: true
+ 	```
+ 	
+ 	Cert-manager automatically configures the “certName” for the self-signed certificate. 
 
-	Cert-manager automatically configures the “certName” for the self-signed certificate. 
-	
-3. Apply the changes by restarting the Pulsar proxy.
+3. 重新启动 Pulsar 代理来应用更改。
 
     ```
     helm upgrade -f /path/to/your/file.yaml CLUSTER_NAME $PULSAR_CHART/
     ```
     
-    Cert-manager automatically generates all certs and attaches them to Kubernetes pods.
+    Cert-manager 自动生成所有证书并将它们附加到 Kubernetes pod。
 
-4. Download TLS CA cert to your local directory. The `ca.crt` is used to connect Pulsar proxy, and the `truststore.jks` is used for Kafka client to connect KoP. 
+4. 将 TLS CA 证书下载到本地目录。 `ca.crt` 用于连接 Pulsar 代理，`truststore.jks` 用于 Kafka 客户端连接 KoP。
 
     ```
     kubectl get secret CLUSTER_NAME-tls-proxy -o=jsonpath='{.data.ca\.crt}' -n KUBERNETES_NAMESPACE | base64 --decode -o ca.crt
@@ -87,19 +88,19 @@ To generate certificates with internal issuer (self-signed), complete the follow
 
 @@@
 
-@@@ Public issuer
+@@@ 公共发布者
 
-To generate certificates with a public issuer (public-signed, let's encrypt), complete the following steps.
+要使用公共发布者（公共签名供加密）生成证书，请按如下步骤操作。 
 
-1. Create the password secret for JKS cert.
+1. 为 JKS cert 创建密码密钥。 
 
 	```
 	kubectl create secret generic cert-jks-passwd --from-literal=password=passwd -n KUBERNETES_NAMESPACE
 	```
 
-2. Create a hosted zone in the [Amazon Route 53](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/Welcome.html) and get the hosted ID.
+2. 在 [Amazon Route 53](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/Welcome.html) 中创建托管区域并获取托管 ID。
 
-3. Enable TLS on the Pulsar proxy. You can set `tls`, `proxy`, `public_issuer` and related parameters to `true` in the YAML file, as shown.
+3. 在 Pulsar 代理上启用 TLS。可以在 YAML 文件中将 `tls`、`proxy`、`public_issuer` 和相关参数设置为 `true`，如图所示。
 
     ```
     tls:
@@ -161,23 +162,23 @@ To generate certificates with a public issuer (public-signed, let's encrypt), co
         external_domain: admin.pulsar.example.local
         external_domain_scheme: https://
     ```
-	Cert-manager automatically configures the `certName` for the self-signed certificate. 
+	Cert-manager 自动为自签名证书配置 `certName`。
 
-4. Apply the changes by restarting the Pulsar proxy.
+4. 重新启动 Pulsar 代理来应用更改。
 
     ```
     helm upgrade -f /path/to/your/file.yaml CLUSTER_NAME $PULSAR_CHART/
     ```
     
-    Cert-manager automatically generates all certs and attaches them to Kubernetes pods.
+    Cert-manager 自动生成所有证书并将它们附加到 Kubernetes pod。 
 
 @@@
 
 :::
 
-# Enable TLS on the Pulsar proxy with manually-generated certificates
+# 在使用手动生成证书的 Pulsar 代理上启用 TLS 
 
-When you enable TLS on the Pulsar proxy without using cert-manager, you need to generate certificate manually first. 
+在不使用 cert-manager 的情况下在 Pulsar 代理上启用 TLS 时，需要先手动生成证书。
 
 To enable TLS on the Pulsar proxy, complete the following steps.
 
@@ -294,7 +295,7 @@ To create the certificates, complete the following steps:
     ```bash
     openssl pkcs8 -topk8 -inform PEM -outform PEM \
           -in broker.key.pem -out broker.key-pk8.pem -nocrypt
-      ```
+    ```
 
 2. Generate the certificate request.
 
@@ -398,7 +399,7 @@ Kubernetes Secrets let you store and manage sensitive information, such as passw
 
     ```
     kubectl create secret generic kop-keystore-password --from-literal=password=<ca-password> -n KUBERNETES_NAMESPACE
-
+    
     ```
 
 ## Configure YAML file
