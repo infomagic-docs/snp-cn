@@ -4,227 +4,229 @@ id: pub-sub-concepts
 category: concepts
 ---
 
-Pulsar is built on the [publish-subscribe](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) pattern (often abbreviated to pub-sub). In this pattern, [producers](#producers) publish messages to [topics](#topics). [Consumers](#consumers) [subscribe](#subscriptions) to those topics, process incoming messages, and send an acknowledgement when processing is complete.
+Pulsar 基于 [发布-订阅](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) （通常缩写为pub-sub）。在这种模式中，[生产者](#producers)向[主题](#topics)发布消息。[消费者](#consumers)[订阅](#subscriptions)这些主题，处理收到的消息，并在处理完成后发送确认。
 
-When a subscription is created, Pulsar persists all messages, even if the consumer is disconnected. Retained messages are discarded only when a consumer acknowledges that those messages are processed successfully.
+创建订阅后，Pulsar 会保留所有消息，即使消费者已经断开连接，这些消息仍会保留。只有在消费者确认消息成功处理后，才会将消息丢弃。 
 
-# Tenants
+# 租户
 
-Pulsar was created from the ground up as a multi-tenant system. To support multi-tenancy, Pulsar has a concept of tenants. Tenants can be spread across clusters and can each have their own authentication and authorization scheme applied to them. They are also the administrative unit at which storage quotas, message TTL, and isolation policies can be managed.
+Pulsar 是从头开始创建的多租户系统。为支持多租户，Pulsar 提出了“租户”的概念。租户可以分布在多个集群中，并且每个租户都具有自己的身份验证和授权方案。租户也是可以管理存储配额、消息  TTL 和隔离策略的管理单元。
 
-For details about how to create tenants, see [work with tenant](/user-guides/admin/work-with-tenants.md).
+如需了解关于创建租户的细节，参见 [使用租户](/user-guides/admin/work-with-tenants.md)。
 
-# Namespaces
+# 命名空间
 
-A namespace represents an administrative unit within a tenant. The configuration policies set on a namespace apply to all the topics created in that namespace. You can create multiple namespaces for a tenant using the StreamNative Console, REST API or the pulsar-admin CLI tool.
+命名空间代表租户内的管理单元。在命名空间所设置的配置策略适用于在该命名空间中创建的所有主题。你可以使用 StreamNative 控制器、REST API 或 pulsar-admin CLI 工具为租户创建多个命名空间。
 
-For details about how to create namespaces, see [work with namespace](/user-guides/admin/work-with-namespaces.md).
+如需了解关于创建命名空间的细节，参见 [使用命名空间](/user-guides/admin/work-with-namespaces.md)。
 
-## Permissions
+## 权限
 
-In Pulsar, permissions are managed at the namespace level (within tenants and clusters). You can grant permissions to specific users for lists of operations such as `produce` and `consume`. In addition, you can revoke permissions from specific users, which means that those users cannot access the specified namespace.
+Pulsar 在命名空间级别（租户和集群内）对权限进行管理。可以为特定的用户授予操作列表权限，如 `消费` 和 `生产`。此外也可以撤销特定用户的权限。撤销后，这些用户将不能访问指定的命名空间。
 
-## Backlog quotas
+## Backlog quota
 
-Backlogs are sets of unacknowledged messages for a topic that have been stored by bookies. Pulsar stores all unacknowledged messages in backlogs until they are processed and acknowledged.
-You can use the backlog quotas to control the allowable size of backlogs at the namespace level. You can set the following items for a backlog quota:
+Backlog 是指由 bookie 储存的、关于某一主题的未确认消息的集合。在这些未确认的消息被处理和确认前，Pulsar 都会将这些消息储存在 backlog 中。
+可以使用 backlog quota 控制命名空间水平所允许的 backlog 的大小。对于 backlog quota，可设置如下项目：
 
-- an allowable size threshold for each topic in the namespace
-- a retention policy that determines which action the broker takes if the threshold is exceeded.
+- 命名空间中，每个主题可允许的阈值大小
+- 保留策略：决定了当超过阈值时 broker 将采取的行动。
 
-The following table lists available retention policies.
-| Policy | Action |
+下表列出可用的保留策略。
+| 策略 | 行动 |
 | --- | --- |
-| `producer_request_hold` | The broker holds but does not persist producers' request payload. |
-| `producer_exception` | The broker disconnects from the client by throwing an exception. |
-| `consumer_backlog_eviction` | The broker begins discarding backlog messages. |
+| `producer_request_hold` | Broker 暂停、但不保留生产者的请求有效负载。 |
+| `producer_exception` | Broker 从客户端断开，抛出异常。 |
+| `consumer_backlog_eviction` | Broker 开始从 backlog 丢弃积压消息。 |
 ## Bundle
 
-For assignment, a namespace is sharded into a list of bundles, with each bundle comprising a portion of the overall hash range of the namespace. A bundle is a virtual group of topics that belong to the same namespace. A namespace bundle is defined as a range between two 32-bit hashes, such as 0x00000000 and 0xffffffff. By default, four bundles are supported for each namespace.
+对于赋值来说，命名空间被分片成 bundle 的列表，每个 bundle 包括命名空间整体哈希范围的一部分。Bundle 是属于同一命名空间的主题的虚拟组。一个命名空间束范围在两个 32 位哈希值之间，例如从 0x00000000 到 0xffffffff。默认情况下，每个命名空间支持 4 个 bundle。
 
-Since the load for topics in a bundle might change over time, one bundle can be split in two bundles by brokers. Then, the new smaller bundle is reassigned to different brokers. By default, the newly split bundles are immediately offloaded to other brokers to facilitate the traffic distribution.
+由于 bundle 中主题的负载可能会随着时间而改变，broker 可以将一个 bundle 拆分成两个 bundle。随后新的较小的 bundle 被重新分配给不同的 broker。默认情况下，新拆分的 bundle 会被立即卸载给其他 broker 来实现流量分配。
 
-## Dispatch rate
+## 调度率
 
-Dispatch rate refers to the number of messages dispatched per second by topics for a namespace. Dispatch rate can be restricted by number of messages per second (`msg-dispatch-rate`) or by number of bytes of messages per second (`byte-dispatch-rate`). Dispatch rate is in second and it can be configured with `dispatch-rate-period`. By default, `msg-dispatch-rate` and `byte-dispatch-rate` are both set to -1, which indicates that throttling is disabled.
+调度率指命名空间的主题每秒派发的消息数量。要限制调度率，可调节每秒消息数（`msg-dispatch-rate`）或每秒消息字节数（`byte-dispatch-rate`）。调度率的单位是秒，可用 `dispatch-rate-period` 配置。默认情况下，`msg-dispatch-rate` 和 `byte-dispatch-rate` 都设置为 -1，表明禁用 throttling 。
 
-# Topics
+# 主题
 
-As in other pub-sub systems, topics in Pulsar are named channels for transmitting messages from producers to consumers. Pulsar supports persistent and non-persistent topics. By default, a persistent topic is created if you do not specify a topic type. With persistent topics, all messages are durably persisted on disks (if the broker is not standalone, messages are durably persisted on multiple disks). whereas data for non-persistent topics is not persisted to storage disks.
+和发布-订阅系统一样，Pulsar 的主题是消息从生产者传递给消费者的有命名的通道。Pulsar 支持持久化和非持久化主题。默认情况下，如果不指定主题类型，就会创建一个持久化主题。对于持久化主题，所有的消息都持久地保存在磁盘上（如果没有独立的 broker，消息会持久地保存在多个磁盘上）。非持久性主题的数据不会持久地保存在存储磁盘上。
 
-Topic names are URLs that have a well-defined structure:
+主题名称是 URL，具有明确的结构：
 
 ```http
 {persistent|non-persistent}://tenant/namespace/topic
 ```
 
-Topic name component | Description
+主题名组成 | 描述 
 :--------------------|:-----------
-`persistent` / `non-persistent` | This identifies the type of topic. Pulsar supports persistent and [non-persistent](#non-persistent-topics) topics. By default, a persistent topic is created if you do not specify the topic type. With persistent topics, all messages are durably persisted on disks (if the broker is not standalone, messages are durably persisted on multiple disks), whereas data for non-persistent topics is not persisted to storage disks.
-`tenant`             | The topic tenant within the instance. Tenants are essential to multi-tenancy in Pulsar, and spread across clusters.
-`namespace`          | The administrative unit of the topic, which acts as a grouping mechanism for related topics. Most topic configuration is performed at the [namespace](#namespaces) level. Each tenant has one or multiple namespaces.
-`topic`              | The final part of the name. Topic names have no special meaning in a Pulsar instance.
+`persistent` / `non-persistent` | 标识主题类型。Pulsar 支持持久化和[非持久化](#non-persistent-topics)主题。默认情况下，如果你不指定主题类型，就会创建一个持久化主题。对于持久化主题，所有的消息都持久地保存在磁盘上（如果没有独立的 broker，消息会持久地保存在多个磁盘上）。而非持久性主题的数据不会持久地保存在存储 disk 上。 
+`tenant`             | 实例中的主题租户。租户是 Pulsar 多租户的不可缺的组成部分，分布在各个集群中。 
+`namespace`          | 主题的管理单元，作为相关主题的分组机制。大多数主题配置是在[命名空间](#namespaces)级别进行的。每个租户有一个或多个命名空间。 
+`topic`              | 名称的最后部分。`topic` 的名称在 Pulsar 实例中没有特殊含义。 
 
-You do not need to explicitly create topics in Pulsar. If a client writes or receives messages to/from a topic that does not yet exist, Pulsar creates that topic under the namespace provided in the [topic name](#topics) automatically. If no tenant or namespace is specified when a client creates a topic, the topic is created in the default tenant and namespace. You can also create a topic in a specified tenant and namespace, such as `persistent://my-tenant/my-namespace/my-topic`. `persistent://my-tenant/my-namespace/my-topic` means the `my-topic` topic is created in the `my-namespace` namespace of the `my-tenant` tenant.
+无需在 Pulsar 中特别创建主题。如果客户端向尚不存在的主题写入消息、或者从不存在的主题接收消息，Pulsar 会在[主题名称](#topics)提供的命名空间下自动创建该主题。如果在客户端创建主题时没有指定租户或命名空间，那么该主题将在默认的租户和命名空间中创建。也可以在指定的租户和命名空间中创建一个主题，例如 `persistent://my-tenant/my-namespace/my-topics`。`persistent://my-tenant/my-namespace/my-topic `，指 `my-topic` 主题是在 `my-tenant` 租户的 `my-namespace` 命名空间中创建的。
 
-## Non-persistent topics
+## 非持久化主题
 
-Non-persistent topics are topics on which messages are never persisted to disk and live only in memory. When using non-persistent delivery, killing a Pulsar broker or disconnecting a subscriber to a topic means that all in-transit messages are lost on that non-persistent topic. In non-persistent topics, brokers immediately deliver messages to all connected subscribers without persisting them in BookKeeper.
+非持久化主题是指消息从未在磁盘上持久化、只是存放在内存中的主题。当使用非持久化传递时，弃用 Pulsar broker 或断开订阅者与主题的连接，非持久化主题的所有在途消息将丢失。在非持久化主题中，broker 会立即将消息传递给所有连接的订阅者，而不会在 BookKeeper 中持久保存。 
 
-### Performance
+### 性能
 
-Non-persistent messaging is usually faster than persistent messaging because brokers don't persist messages and immediately send acks back to the producer as soon as that message is delivered to connected brokers. Producers thus see comparatively low publish latency with non-persistent topics.
+因为 broker 不会持久化消息，非持久化消息传递通常比持久化消息传递更快，一旦该消息被传递给连接的 broker，就会立即向生产者发送 acks。因此对于生产者，非持久化主题的发布延迟相对较短。
 
-## Partitioned topics
+## 分区主题
 
-Normal topics are served only by a single broker, which limits the maximum throughput of the topic. Partitioned topics are a special type of topic that are handled by multiple brokers, thus allowing for higher throughput.
-A partitioned topic is actually implemented as N internal topics, where N is the number of partitions. When publishing messages to a partitioned topic, each message is routed to one of several brokers. The distribution of partitions across brokers is handled automatically by Pulsar.
-### Routing modes
+普通主题仅仅是由单一 broker 提供的，限制了该主题的最大通量。分区主题是特殊类型的主题，由多个 broker 处理，因此允许更大的通量。
 
-When publishing to partitioned topics, you must specify a *routing mode*. The routing mode determines which partition---that is, which internal topic---each message should be published to.
+分区主题实际上是由 N 个内部主题实现的，其中 N 是分区的数量。当向一个分区主题发布消息时，每条消息会途径多个 broker 中的某个 broker。Broker 间如何分配分区则是由 Pulsar 自动处理。
 
-Mode     | Description 
+### 路由模式
+
+发布到分区主题时，你必须指定一个*路由模式*。路由模式决定了每个消息应该发布到哪个分区，也就是哪个内部主题。
+
+模式     | 描述 
 :--------|:------------
-`RoundRobinPartition` | If no key is provided, the producer will publish messages across all partitions in round-robin fashion to achieve maximum throughput. Please note that round-robin is not done per individual message but rather it's set to the same boundary of batching delay, to ensure batching is effective. While if a key is specified on the message, the partitioned producer will hash the key and assign the message to a particular partition. This is the default mode. 
-`SinglePartition`     | If no key is provided, the producer will randomly pick one single partition and publish all the messages into that partition. While if a key is specified on the message, the partitioned producer will hash the key and assign the message to a particular partition.
-`CustomPartition`     | Use custom message router implementation that will be called to determine the partition for a particular message.
+`RoundRobinPartition` | 如果没有提供 key，生产者将在所有分区中以 round-robin 方式发布消息，以达到最大通量。需要注意的是，round-robin 不是按单个消息进行，而是将其批处理延迟边界设置为相同，以确保批处理的有效性。而如果在消息上指定了 key，分区生产者将对 key 进行哈希运算，并将消息分配得到一个特定的分区。此模式为默认模式。 
+`SinglePartition`     | 如果没有提供 key，生产者将随机挑选单一分区，将所有消息发布到这个分区。如果消息指定了 key，则分区生产者将对 key 进行哈希运算，将消息分配到特定分区。 
+`CustomPartition`     | 执行自定义消息路径来确定特定消息去往的分区。 
 
-### Ordering guarantee
+### 排序保证
 
-The ordering of messages is related to routing mode and the key of the message. Usually, users would want an ordering of the Per-key-partition guarantee.
+消息的排序与路径模式和消息的 key 相关。通常用户会希望有 Per-Key-partition 保证排序。
 
-If there is a key attached to message, the messages will be routed to corresponding partitions based on the [hashing scheme](#hashing-scheme), when using either `SinglePartition` or `RoundRobinPartition` mode.
+如果消息上附有 key，当使用 `SinglePartition` 或 `RoundRobinPartition` 模式时，消息将根据[散列方案](#hashing-scheme)，被分配到对应的分区。 
 
-Ordering guarantee | Description | Routing Mode and Key
+ 排序保证          | 描述 | 路径模式和 key                                               
 :------------------|:------------|:------------
-Per-key-partition  | All the messages with the same key will be in order and be placed in the same partition. | Use either `SinglePartition` or `RoundRobinPartition` mode, and Key is provided by each message.
-Per-producer       | All the messages from the same producer will be in order. | Use `SinglePartition` mode, and no Key is provided for each message.
+Per-key-partition  | 具有相同 key 的消息将按顺序排列，并被发放到相同的分区。 | 使用 `SinglePartition` 或 `RoundRobinPartition` 模式，且每个消息都有 key。 
+Per-producer       | 所有来自同一个生产者的消息将按顺序排列。                | 使用 `SinglePartition` 模式，且并未对每个消息都提供 key。 
 
-### Hashing scheme
+### 散列 schema
 
-Hashing scheme is an enum that represents sets of standard hashing functions available when choosing the partition to use for a particular message.
+散列 schema 是一种枚举，表示在选择用于特定消息的分区时可用的标准散列函数集。
 
-There are 2 types of standard hashing functions available: `JavaStringHash` and `Murmur3_32Hash`. 
-The default hashing function for producers is `JavaStringHash`.
-Please pay attention that `JavaStringHash` is not useful when producers can be from different multiple language clients. In this  case, it is recommended to use `Murmur3_32Hash`.
+有2种类型的标准散列函数可用：`JavaStringHash `和 `Murmur3_32Hash`。
+对生产者来说，默认的散列函数是  `JavaStringHash`。
+注意：生产者可能来自不同语言客户端时，`JavaStringHash` 是不起作用的。建议使用  `Murmur3_32Hash`。
 
-## Dead letter topics
+## 死信主题
 
-Dead letter topics enable you to consume new messages when some messages cannot be consumed successfully by a consumer. In this mechanism, messages that fail to be consumed are stored in a separate topic, which is called dead letter topic. You can decide how to handle messages in the dead letter topic.
+当有些消息不能被消费者成功处理时，通过死信主题，消费者可以去消费新的消息。在这个机制中，未能被消费的消息将被储存到一个独立的主题中，即死信主题。你可决定如何处理死信主题中的消息。
 
-Dead letter topics depend on message re-delivery. Messages are redelivered either due to [acknowledgement timeout](#acknowledgement-timeout) or [negative acknowledgement](#negative-acknowledgement). If you are going to use negative acknowledgement on a message, make sure it is negatively acknowledged before the acknowledgement timeout. 
+死信主题依赖消息的再传递。消息重新投递的原因可以是：[确认超时](#acknowledgement-timeout)或[否定确认 (negative acknowledgement)](#negative-acknowledgement)。如果要对消息使用否定确认，需确保在确认超时前进行否定确认。
 
-> **Note**    
-> Currently, dead letter topics are enabled in the [Shared](#shared) and [Key_Shared](#key_shared) subscription modes.
+> **注**    
+> 当前在 [Shared](#shared) 和 [Key_Shared](#key_shared) 订阅模式下可启用死信主题。
 
-## Retry letter topics
+## 重试发信主题
 
-For many online business systems, a message is re-consumed due to an exception that occurs in the business logic processing. To configure the delay time for re-consuming the failed messages, you can configure the producer to send messages to both the business topic and the retry letter topic, and enable automatic retry on the consumer. When automatic retry is enabled on the consumer, a message is stored in the retry letter topic if the messages are not consumed, and therefore the consumer automatically consumes the failed messages from the retry letter topic after a specified delay time.
+对于很多线上业务系统来说，业务逻辑处理异常，导致消息被重新消费。为了配置重新消费失败消息的延迟时间，可以配置生产者向业务主题和重试发信主题发送消息，并在消费端启动自动重测。当在消费者上启用自动重试时，如果消息没有被消费，则会被保存在重试发信主题中，因此消费者在指定的延迟时间后，会自动消费重试发信主题中的失败消息。
 
 ## Schema
 
-Pulsar has a built-in schema registry that enables clients to upload data schemas on a per-topic basis. Those schemas dictate which data types are recognized as valid for that topic. Pulsar schema enables you to use language-specific types of data when constructing and handling messages from simple types like `string` to more complex application-specific types.
+Pulsar 具有内置 schema 注册表，客户能够在每个主题的基础上上传数据 schema。这些 schema 决定了哪些数据类型可被认定为对该主题有效。Pulsar schema 使你能够在构建和处理消息时使用特定语言的数据类型，简单的如 `string` ，也有更复杂的特定应用类型。
 
-# Messages
+# 消息
 
-Messages are the basic unit of Pulsar. The following table lists the components of messages.
+消息是 Pulsar 的基本单位。如下表格列出消息的组成部分。 
 
-Component | Description
+组成部分 | 描述 
 :---------|:-------
-Value / data payload | The data carried by the message. All Pulsar messages contain raw bytes, although message data can also conform to data schemas.
-Key | Messages are optionally tagged with keys, which is useful for things like topic compaction.
-Properties | An optional key/value map of user-defined properties.
-Producer name | The name of the producer who produces the message. If you do not specify a producer name, the default name is used. 
-Sequence ID | Each Pulsar message belongs to an ordered sequence on its topic. The sequence ID of the message is its order in that sequence.
-Publish time | The timestamp of when the message is published. The timestamp is automatically applied by the producer.
-Event time | An optional timestamp attached to a message by applications. For example, applications attach a timestamp on when the message is processed. If nothing is set to event time, the value is `0`. 
-TypedMessageBuilder | It is used to construct a message. You can set message properties such as the message key, message value with `TypedMessageBuilder`. </br> When you set `TypedMessageBuilder`, set the key as a string. If you set the key as other types, for example, an AVRO object, the key is sent as bytes, and it is difficult to get the AVRO object back to the consumer.
+值/数据有效负载 | 消息所携带的数据。尽管消息数据也可以符合数据 schema，但所有 Pulsar 消息都包含原始字节。 
+Key | 可选，可用于标记消息，对于主题压缩等有帮助。                 
+属性 | 用户定义属性的 key 和赋值的关系图。                          
+ 生产者名            | 产生消息的生产者的名字。如果没有指定生产者的名字，则会使用默认名。 
+序列 ID | 每个 Pulsar 消息都属于相关主题的有序序列。消息的序列 ID 是它在该序列中的顺序。 
+ 发布时间            | 由生产者自动生成的时间戳。时间戳是由生产者自动应用的。 
+ 事件时间            | 应用程序附加在消息上的可选时间戳。例如，应用程序会在消息被处理时附加一个时间戳。如果没有对事件时间进行任何设置，其值为`0`。 
+TypedMessageBuilder | 用来构建消息。可以通过  `TypedMessageBuilder` 设置消息属性，如消息的 key 和赋值等。 </br> 设置 `TypedMessageBuilder` 时，将 key 设置为字符串。如果把 key 设置为其他类型，如 AVRO 对象，key 就会以字节形式发送，这样就很难把 AVRO 对象发回给消费者。 
 
-## Message compression
+## 消息压缩
 
-You can compress messages published by producers during transportation. Pulsar currently supports the following types of compression:
+在运输过程中，可对生产商发布的消息进行压缩。Pulsar 目前支持如下压缩类型： 
 
 * [LZ4](https://github.com/lz4/lz4)
 * [ZLIB](https://zlib.net/)
 * [ZSTD](https://facebook.github.io/zstd/)
 * [SNAPPY](https://google.github.io/snappy/)
 
-## Message retention and expiry
+## 消息保留和过期
 
-By default, Pulsar brokers immediately delete all messages that have been acknowledged by a consumer, and persistently store all unacknowledged messages in a message backlog.
+默认情况下，Pulsar 的 broker 会立即删除所有已经被消费者确认的消息，而所有没有确认的消息则持续储存在消息 backlog 中。
 
-All message retention and expiry is managed at the [namespace](#namespaces) level. The diagram below illustrates message retention and expiry.
+所有消息保留和过期都是在[命名空间](#namespaces) 水平管理的。下图解释了消息保留和过期的情况。
 
 ![Message retention and expiry](../../image/retention-expiry.png)
 
-### Message retention
+### 消息保留 
 
-Message retention enables you to store messages that have been acknowledged by a consumer. With message retention, shown at the top, a retention policy applied to all topics in a namespace dicates that some messages are durably stored in Pulsar even though they've already been acknowledged. Acknowledged messages that are not covered by the retention policy are deleted. Without a retention policy, *all* of the acknowledged messages would be deleted.
+消息保留使你能够存储已经被消费者确认的消息。通过顶部显示的消息保留，适用于命名空间中所有主题的保留策略表明，即使某些消息已经被确认，也会被持久地保存在 Pulsar 中。不在保留策略范围内的已确认的消息将被删除。如果没有保留策略，*所有*已确认的消息都会被删除。 
 
-### Message expiry
+### 消息过期
 
-Message expiry enables you to set a time to live (TTL) for messages that have not yet been acknowledged
+消息过期是用户为尚未被确认的消息设置一个生存时间（TTL）。
 
-With message expiry, shown at the bottom, some messages are deleted, even though they have not been acknowledged, because they've expired according to the TTL applied to the namespace (for example because a TTL of 5 minutes has been applied and the messages haven't been acknowledged but are 10 minutes old).
+消息过期的情况下，消息显示在底部，即使这些消息没有被确认，也会因为超过了命名空间的 TTL 而被删除（例如，设置 TTL 为 5 分钟，但 10 分钟过去了消息仍未被确认）。 
 
-## Message deduplication
+## 消息去重
 
-Message duplication occurs when a message is persisted by Pulsar more than once. Message deduplication is an optional Pulsar feature that prevents unnecessary message duplication by processing each message only once, even if the message is received more than once. Message deduplication is handled at the namespace level or the topic level. 
+当一个消息被 Pulsar 持续保存一次以上时，就会出现消息重复。消息去重是 Pulsar 的一项可选的功能，每条消息只处理一次，即使该消息被接收了不止一次，也能防止不必要的消息重复。重复消息处理对应命名空间级别或主题级别处理。
 
-The following diagram illustrates what happens when message deduplication is disabled and enabled:
+下图说明禁用和打开消息去重时的情况：
 
 ![Pulsar message deduplication](../../image/message-deduplication.png)
 
-Message deduplication is disabled in the scenario shown at the top. Here, a producer publishes message 1 on a topic; the message reaches a Pulsar broker and is persisted to BookKeeper. The producer then sends message 1 again (in this case due to some retry logic), and the message is received by the broker and stored in BookKeeper again, which means that duplication has occurred.
+上图显示重复消息删除功能被禁用的场景。生产者在一个主题上发布消息 1；该消息到达一个 Pulsar 代理，并被持久化到 BookKeeper。然后生产者再次发送消息 1（由于一些重试逻辑而反复发送），消息被 broker 收到并再次存储在 BookKeeper 中，由此发生消息重复。
 
-In the second scenario at the bottom, the producer publishes message 1, which is received by the broker and persisted, as in the first scenario. When the producer attempts to publish the message again, however, the broker knows that it has already seen message 1 and thus does not persist the message.
+下图情况中，生产者发布消息 1，broker 接收到该消息并持久化，至此和第一张图的情况相同。但当生产者试图再次发送该消息时，broker 知道已经接受过消息 1，便不会对该消息持久化。
 
-### Producer idempotency
+### 生产者幂等 
 
-The other available approach to message deduplication is to ensure that each message is *only produced once*. This approach is typically called **producer idempotency**. The drawback of this approach is that it defers the work of message deduplication to the application. In Pulsar, this is handled at the broker level, so you do not need to modify your Pulsar client code. Instead, you only need to make administrative changes. For details, see Managing message deduplication.
+另一种消息去重方法是确保每条消息只产生一次，这种方法通常被称为**生产者幂等**。这种方法的缺点是，它将消息去重的工作推迟到应用程序来进行。在 Pulsar 中则是 broker 层面上处理，无需修改 Pulsar 客户端代码，而只需要做管理改变。详情请见管理消息去重。
 
-### Deduplication and effectively-once semantics
+### 去重和有效一次（effectively-once）语义
 
-Message deduplication makes Pulsar an ideal messaging system to be used in conjunction with Stream Processing Engines (SPEs) and other systems seeking to provide effectively-once processing semantics. Messaging systems that do not offer automatic message deduplication require the SPE or other system to guarantee deduplication, which means that strict message ordering comes at the cost of burdening the application with the responsibility of deduplication. With Pulsar, strict ordering guarantees come at no application-level cost.
+消息去重使得 Pulsar 成为理想的消息传递系统，可与流处理引擎（SPE）和其他寻求提供有效一次（effectively-once）处理语义的系统一起使用。不提供自动消息去重的系统需要 SPE 或其他系统保证消息去重，这意味着要实现严格的消息排序，就需要叠加使用消息去重应用程序。而对于 Pulsar，要实现严格的排序保证无需付出任何应用层面的成本。
 
-## Delayed message delivery
+## 延迟消息传递
 
-Delayed message delivery enables you to consume a message later rather than immediately. In this mechanism, a message is stored in BookKeeper, `DelayedDeliveryTracker` maintains the time index(time -> messageId) in memory after being published to a broker, and it is delivered to a consumer once the specific delayed time is passed.  
+延迟消息传递使得消费者无需立即消费一条消息，而是可以稍后消费。在这个机制中，消息被存储在 BookKeeper 中，消息被发布给 broker 后，`DelayedDeliveryTracker` 在内存中维护时间索引（time->messageId），一旦超过特定的延迟时间，消息就会被传递给消费者。 
 
-Delayed message delivery only works in [Shared](#shared) subscription mode. In [Exclusive](#exclusive) and [Failover](#failover) subscription modes, the delayed message is dispatched immediately.
+延迟消息发送只在 [Shared](#shared) 订阅模式下有效。在[Exclusive](#exclusive) 和 [Failover](#failover) 订阅模式下，延迟的消息仍会被立即发送。
 
-The diagram below illustrates the concept of delayed message delivery:
+下图解释了延迟消息传递的概念：
 
 ![Delayed Message Delivery](../../image/message_delay.png)
 
-A broker saves a message without any check. When a consumer consumes a message, if the message is set to delay, then the message is added to `DelayedDeliveryTracker`. A subscription checks and gets timeout messages from `DelayedDeliveryTracker`.
+Broker 保存消息而不做任何检查。当消费者消费消息时，如果该消息被设置为延迟，那么该消息将被添加到 `DelayedDeliveryTracker`。订阅检查将从`DelayedDeliveryTracker` 获得超时消息。 
 
-# Producers
+# 生产者
 
-A producer is a process that attaches to a topic and publishes messages to a Pulsar broker.
+生产者是向主题添加消息、并将消息发布给 Pulsar broker 的过程。 
 
-## Send modes
+## 发送模式
 
-Producers send messages to brokers synchronously (sync) or asynchronously (async).
+生产者向 broker 发送消息，发送可以是同步的 (sync) 也可以是异步的 (async)。
 
-| Mode       | Description |            
+| 模式       | 描述 |
 |:-----------|-----------|
-| Sync send  | The producer waits for an acknowledgement from the broker after sending every message. If the acknowledgment is not received, the producer treats the sending operation as a failure.                                                                                                                                                                                    |
-| Async send | The producer puts a message in a blocking queue and returns immediately. The client library sends the message to the broker in the background. If the queue is full (you can configure the maximum size), the producer is blocked or fails immediately when calling the API, depending on arguments passed to the producer. |
+| 同步发送 | 生产者在发送每条消息后，都会等待来自 broker 的确认。如果没有收到确认，则生产者将认为发送失败。                                                                                                                     |
+| 异步发送 | 生产者会将消息放到阻塞队列中并立即返回。客户端库在后台将消息发送给 broker。如果队列已满（用户可以配置队列大小），则调用 API 时，producer 可能会立即被阻止或失败，具体取决于传递给 producer 的参数。 |
 
-## Access mode
+## 访问模式
 
-You can have different types of access modes on topics for producers.
+对于生产者产生的主题，你可选择不同的访问模式。
 
-|Access mode | Description
-|---|---
-`Shared`|Multiple producers can publish on a topic. <br><br>This is the **default** setting.
-`Exclusive`|Only one producer can publish on a topic. <br><br>If there is already a producer connected, other producers trying to publish on this topic get errors immediately.<br><br>The “old” producer is evicted and a “new” producer is selected to be the next exclusive producer if the “old” producer experiences a network partition with the broker.
-`WaitForExclusive`|If there is already a producer connected, the producer creation is pending (rather than timing out) until the producer gets the `Exclusive` access.<br><br>The producer that succeeds in becoming the exclusive one is treated as the leader. Consequently, if you want to implement the leader election scheme for your application, you can use this access mode.
+| 访问模式           | 描述 |
+|---|---|
+|`Shared`|多个生产者可发表同一个主题。 <br><br>此为**默认**设置。|
+|`Exclusive`|一个主题仅能有一个生产者。 <br><br>如果已经连接了一个生产者，则其他生产者试图在这个主题上发表时，会立即出现错误。<br><br>如弃用原来的生产者，则生产者和 broker 的网络分区断开，broker 与所选的新的生产者建立联系。|
+|`WaitForExclusive`|如果已经连接了一个生产者，那么这个生产者的创建将被挂起（而不是超时），直到这个生产者获得  `Exclusive`  访问。<br><br>成功成为专有生产者后，这个生产者将被视为领导者。如果你想为应用程序实现领导者选举，则可以使用这种访问模式。|
 
-> **Note**
+> **注**
 >
-> Once an application creates a producer with the `Exclusive` or `WaitForExclusive` access mode successfully, the instance of the application is guaranteed to be the **only one writer** on the topic. Other producers trying to produce on this topic get errors immediately or have to wait until they get the `Exclusive` access. 
+> 一旦某个应用程序出现一个生产者成功实现了 `Exclusive`  或  `WaitForExclusive` 访问模式，该应用程序的实例将成为该主题的**唯一创作者**。其他创作者对这一主题进行输出时，将立即得到错误提示，或等待获得  `Exclusive` 访问。 
 
 # Consumers
 
@@ -232,126 +234,128 @@ A consumer is a process that attaches to a topic via a subscription and then rec
 
 A consumer sends a flow permit request to a broker to get messages. There is a queue at the consumer side to receive messages pushed from the broker. You can configure the queue size with the `receiverQueueSize` parameter. The default size is `1000`). Each time `consumer.receive()` is called, a message is dequeued from the buffer.  
 
-## Receive modes
+## 接收模式
 
-Messages are received from brokers either synchronously (sync) or asynchronously (async).
+从 broker 收到的消息可以是同步的 (sync)，也可以是异步的 (async)。
 
-| Mode          | Description                                                                                                                                                                                                   |
-|:--------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Sync receive  | A sync receive is blocked until a message is available.                                                                                                                                                  |
-| Async receive | An async receive returns immediately with a future value—for example, a [`CompletableFuture`](http://www.baeldung.com/java-completablefuture) in Java—that completes once a new message is available. |
+| 模式     | 描述                                                         |
+| :------- | :----------------------------------------------------------- |
+| 同步接收 | 同步保持阻断，直到接收到消息。                               |
+| 异步接收 | 异步接收会立即返回一个未来值。例如 Java [`CompletableFuture`](http://www.baeldung.com/java-completablefuture)，一旦有新的消息就会完成。 |
 
-## Acknowledgement
+## 确认
 
-When a consumer consumes a message successfully, the consumer sends an acknowledgement request to the broker. This message is permanently stored, and then deleted only after all the subscriptions have acknowledged it. If you want to store the message that has been acknowledged by a consumer, you need to configure the [message retention policy](#message-retention-and-expiry).
+当消费者成功地消费消息，消费者会向 broker 发送确认请求。这个消息将被永久保存，只有在所有订阅者都确认后才会删除。如果你想存储已经被消费者确认的消息，你需要配置[消息保留策略](#message-retention-and-expiry)。
 
-For a batch message, if batch index acknowledgement is enabled, the broker maintains the batch index acknowledgement status and tracks the acknowledgement status of each batch index to avoid dispatching acknowledged messages to the consumer. When all indexes of the batch message are acknowledged, the batch message is deleted. 
+对于一个批处理消息，如果启用了批索引确认，broker 会保持批索引的确认状态，并跟踪每个批索引的确认状态，以避免将确认的消息调度给消费者。该批消息的所有索引都被确认后，该批消息将被删除。
 
-Messages are acknowledged either one by one or cumulatively. With cumulative acknowledgement, the consumer only needs to acknowledge the last message it received. All messages in the stream up to (and including) the provided message will not be re-delivered to that consumer.
+消息被逐一确认或批量确认。在批量确认的情况下，消费者只需要确认它收到的最后一条消息。流里的所有消息（以及之前提供过的消息）都不会被再次发送给那个消费者。
 
-Messages can be acknowledged in the following two ways:
+消息确认可采用以下两种方式：
 
-- Messages are acknowledged individually. With individual acknowledgement, the consumer needs to acknowledge each message and send an acknowledgement request to the broker.
-- Messages are acknowledged cumulatively. With cumulative acknowledgement, the consumer only needs to acknowledge the last message it received. All messages in the stream up to (and including) the provided message are not re-delivered to that consumer.
+- 单个确认消息。在单个确认的情况下，消费者需要确认单个消息，并向 broker 发送确认请求。
+- 批量确认消息。在批量确认的情况下，消费者只要确认收到的最后一条消息。流里的所有消息（以及之前提供过的消息）都不会被再次发送给那个消费者。
 
-> **Note**
+> **注**
 > 
-> Cumulative acknowledgement cannot be used in the [Shared subscription mode](#shared), because the Shared subscription mode involves multiple consumers who have access to the same subscription. In the Shared subscription mode, messages are acknowledged individually.
+> 批量确认不能在[共享订阅模式](#shared)中使用，因为共享订阅模式涉及到多个消费者，他们可以访问同一个订阅。共享订阅模式的消息需要单个确认。
 
-### Acknowledgement timeout
+### 确认超时
 
-If a message is not consumed successfully, and you want to trigger the broker to redeliver the message automatically, you can adopt the unacknowledged message automatic re-delivery mechanism. Client tracks the unacknowledged messages within the entire `acktimeout` time range, and sends a `redeliver unacknowledged messages` request to the broker automatically when the acknowledgement timeout is specified.
+如果消息没有被成功消费，而需要触发 broker 自动重新传递消息，可以采用未确认消息自动重新传递机制。客户端跟踪整个 `acktimeout` 时间范围内未确认消息，当确认超时时，自动向 broker 发送  `redeliver unacknowledged messages`  请求。
 
-> **Note**
+> **注**
 > 
-> - If batching is enabled, other messages and the unacknowledged messages in the same batch are redelivered to the consumer.
-> - Prefer negative acknowledgements over acknowledgement timeout. Negative acknowledgement controls the re-delivery of individual messages with more precision, and avoids invalid redeliveries when the message processing time exceeds the acknowledgement timeout.
+> - 如果启用了批处理，同一批次中的其他消息和未被确认的消息将被重新交付给消费者。
+> - 相对于确认超时，优选取消确认。取消确认更精确地控制单个消息的再传递，在消息处理时间超过确认超时时，可避免发生无效再传递。
 
-## Negative acknowledgement
+## 否定确认（negative acknowledgement）
 
-When a consumer does not consume a message successfully at a time, and wants to consume the message again, the consumer sends a negative acknowledgement to the broker, and then the broker redelivers the message.
+当消费者某次没有成功地消费消息、并希望再次消费该消息时，消费者会向 broker 发送否定确认，然后 broker 就会重新传递该消息。
 
-Messages are negatively acknowledged one by one or cumulatively, which depends on the consumption subscription mode.
+根据不同的消费订阅模式，可以单个或批量否定确认。
 
-In the exclusive and failover subscription modes, consumers only negatively acknowledge the last message they receive.
+Exclusive 和灾备订阅模式中，消费者只对最后收到的消息进行否定确认。
 
-In the shared and key_shared subscription modes, you can negatively acknowledge messages individually.
+在 shared 和 key_shared 订阅模式中，可以对消息进行单个否定确认。
 
-Be aware that negative acknowledgment on ordered subscription types, such as Exclusive, Failover and Key_Shared, can cause failed messages to arrive consumers out of the original order.
+需要注意的是，对有序订阅类型（如 Exclusive、灾备、Key_Shared 模式）进行否定确认，可能导致传输失败的消息到达消费者的顺序和原始顺序不同。 
 
-> **Note**
+> **注**
 > 
-> If batching is enabled, other messages and the negatively acknowledged messages in the same batch are redelivered to the consumer.
+> 如果弃用批处理，则同一批次中其他消息将连同否定确认的消息，一并重新传递给消费者。
 
-## Subscriptions
+## 订阅
 
-A subscription is a named configuration rule that determines how messages are delivered to consumers. Four subscription modes are available in Pulsar: [Exclusive](#exclusive), [Shared](#shared), [Failover](#failover), and [Key_Shared](#key_shared).
+订阅是一种命名的配置规则，决定了消息将被如何传递给消费者。在 Pulsar 中，有四种订阅模式可用：[Exclusive](#exclusive)、 [Shared](#shared)、[灾备](#failover)，和[Key_Shared](#key_shared)。 
 
 ### Exclusive
 
-In *exclusive* mode, only a single consumer is allowed to attach to the subscription. If multiple consumers subscribe to a topic using the same subscription, an error occurs.
+*Exclusive* 模式下，只允许一个消费者附加到该订阅。如果多个消费者使用同一个订阅来订阅同一个主题，就会发生错误。
 
-In the diagram below, only **Consumer A-0** is allowed to consume messages.
+如下图中，只允许**消费者A-0** 消费消息。
 
-> Exclusive mode is the default subscription mode.
+> Exclusive 模式为默认订阅模式。
 
 ![Exclusive subscriptions](../../image/pulsar-exclusive-subscriptions.png)
 
-### Failover
+### 灾备
 
-In *failover* mode, multiple consumers can attach to the same subscription. A master consumer is picked for non-partitioned topics or each partition of partitioned topics and receives messages. When the master consumer disconnects, all (non-acknowledged and subsequent) messages are delivered to the next consumer in line.
+在*灾备*模式下，多个消费者可以附加到同一个订阅。为非分区主题或分区主题的每个分区挑选一个主消费者并接收消息。当主消费者断开连接时，所有（未确认和后续的）消息都被传递给排在主消费者随后的消费者。
 
-For partitioned topics, the broker sorts consumers by priority level and lexicographical order of consumer name. Then, the broker tries to evenly assign topics to consumers with the highest priority level.
+对于分区的主题，broker 按照优先级和消费者名称的词汇顺序对消费者进行排序。然后，broker 将尝试将主题均匀地分配给具有最高优先级的消费者。
 
-For non-partitioned topics, brokers pick consumers in the order they subscribe to the non partitioned topic.
+对于非分区主题，broker 按照消费者订阅非分区主题的顺序挑选消费者。
 
-In the diagram below, **Consumer-B-0** is the master consumer while **Consumer-B-1** would be the next consumer in line to receive messages if **Consumer-B-0** is disconnected.
+如下图所示，**消费者-B-0** 是主消费者，而**消费者-B-1** 紧跟在**消费者-B-0 **之后，因此在**消费者-B-0 **断开连接的情后，将成为下一个接受消息的消费者。
 
 ![Failover subscriptions](../../image/pulsar-failover-subscriptions.png)
 
 ### Shared
 
-In Shared or *round robin* mode, multiple consumers can attach to the same subscription. Messages are delivered in a round robin distribution across consumers, and any given message is delivered to only one consumer. When a consumer disconnects, all the messages that were sent to it and not acknowledged will be rescheduled for sending to the remaining consumers.
+消息通过 round robin 轮询机制分发给不同的消费者，并且每个消息仅会被分发给一个消费者。 当消费者断开连接，所有已经发送给该消费者、但没有被确认的消息将被重新安排，分发给其它存活的消费者。
 
-In the diagram below, **Consumer-C-1** and **Consumer-C-2** are able to subscribe to the topic, but **Consumer-C-3** and others could as well.
+如下图所示，**消费者-C-1 **和**消费者-C-2 **能够订阅该主题，而**消费者-C-3** 和其他人同样也可订阅该主题。
 
-> **Limitations of Shared mode**
+> **Shared 模式的局限性**
 > 
-> When using Shared mode, be aware that:
-> * Message ordering is not guaranteed.
-> * You cannot use cumulative acknowledgment with Shared mode.
+> 使用 Shared 模式时需要了解如下：
+> * 不能保证消息的顺序。 
+> * Shared 模式下不能使用批量确认。
 
 ![Shared subscriptions](../../image/pulsar-shared-subscriptions.png)
 
 ### Key_Shared
 
-In *Key_Shared* mode, multiple consumers can attach to the same subscription. Messages are delivered in a distribution across consumers and messages with the same key or same ordering key are delivered to only one consumer. No matter how many times the message is re-delivered, it is delivered to the same consumer. When a consumer connected or disconnected, it will cause a served consumer change for some key of message.
+*Key_Shared*  模式下，多个消费者可以被加到同一个订阅中。消息被传递给多个消费者，有相同 key 的消息、或者相同预定 key 的消息将仅被传递给一个消费者。无论消息被重新交付多少次，它都只能交付给同一个消费者。当一个消费者连接或断开连接时，将导致接受服务的消费者针对 key 作出改变。
 
-> **Limitations of Key_Shared mode**
-> When you use Key_Shared mode, be aware that:
-> * You need to specify a key or `orderingKey` for messages.
-> * You cannot use cumulative acknowledgment with Key_Shared mode.
-> * Your producers should disable batching or use a key-based batch builder.
+> **Key_Shared 模式的局限性**
+> 当使用 Key_Shared  模式时需了解如下：
+>
+> * 需要为消息指定 key 或  `orderingKey` 。
+> * Key_Shared 模式下不能使用批量确认。
+> * 生产者应当禁用批处理，或使用基于key 批处理生成器。
 
 ![Key_Shared subscriptions](../../image/pulsar-key-shared-subscriptions.png)
 
-## Multi-topic subscriptions
+## 多主题订阅
 
-When a consumer subscribes to a Pulsar topic, by default it subscribes to one specific topic, such as `persistent://public/default/my-topic`. However, Pulsar consumers can simultaneously subscribe to multiple topics. You can define a list of topics in two ways:
+消费者订阅一个 Pulsar 主题时，默认情况下是订阅一个特定主题，例如 `persistent://public/default/my-topic`。Pulsar 消费者也可同时订阅多个主题。可以通过两种方式定义主题列表。
 
-* On the basis of a [**regular expression**](https://en.wikipedia.org/wiki/Regular_expression) (regex), for example `persistent://public/default/finance-.*`
-* Explicitly define a list of topics.
+* 基于 [**regular expression**](https://en.wikipedia.org/wiki/Regular_expression) (regex)，例如：persistent://public/default/finance-.*`
+* 通过明确指定的主题列表。
 
-> **Note**
+> **注**
 > 
-> When subscribing to multiple topics by regex, all topics must be in the same [namespace](#namespaces).
+> 当通过 regex 订阅多个主题时，所有的主题必须是在同一个[命名空间](#namespaces)。 
 
-When subscribing to multiple topics, the Pulsar client automatically makes a call to the API to discover the topics that match the regex pattern/list, and then subscribe to all of them. If any of the topics do not exist, the consumer auto-subscribes to them once the topics are created.
+订阅多个主题时，Pulsar 客户端会自动调用 API 来发现符合 regex 模式/列表的主题，然后订阅所有这些主题。如果暂时不存在主题，则一旦创建相关主题，消费者就会自动订阅它们。
 
-> **No ordering guarantees across multiple topics**
-> 
-> When a producer sends messages to a single topic, all messages are guaranteed to be read from that topic in the same order. However, these guarantees do not hold across multiple topics. So when a producer sends messages to multiple topics, the order in which messages are read from those topics is not guaranteed to be the same.
+> **订阅多个主题无法保证顺序**
+>
+> 当生产者向一个主题发送消息时，所有的消息都能确保以相同顺序从该主题读取。但在存在多个主题时却无法保证这样的顺序。当生产者向多个主题发送消息时，不能保证从这些主题中读取消息的顺序都相同。 
+>
 
-## Consumerless subscriptions and their corresponding modes
+## 无消费者的订阅及其相应的模式 
 
-When a subscription has no consumers, its subscription mode is undefined. A subscription's mode is defined when a consumer connects to the subscription, and the mode can be changed by restarting all consumers with a different configuration.
+当订阅没有消费者时，它的订阅模式是未定义的。当消费者连接到订阅时，才对订阅模式进行定义，并且可以通过用不同配置重新启动所有消费者来改变模式。
