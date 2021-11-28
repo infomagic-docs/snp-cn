@@ -4,7 +4,7 @@ id: pulsar-io-concepts
 category: concepts
 ---
 
-如果消息系统可以方便地和其他外部系统（如数据库和其他消息系统）一起使用，就能最大程度地发挥消息系统的作用。
+如果消息系统可以方便地和外部系统（如数据库和其他消息系统）一起使用，就能最大程度地发挥消息系统的作用。
 
 **Pulsar IO 连接器** 能让你轻松创建、部署和管理与外部系统互动的连接器，如 [Apache Cassandra](https://cassandra.apache.org) 和 [Aerospike](https://www.aerospike.com)。
 
@@ -34,4 +34,4 @@ Sink 是指将数据从 Pulsar 传出到外部系统的应用程序。常见的 
 | 至少一次（`at-least-once`） | 发送到连接器的消息都会被处理至少一次。也可能出现消息被重复处理的情况。 |
 | 有效一次（`effectively-once`） | 发送到连接器的消息只被处理一次，并有一个与之关联的输出。 |
 
-连接器的处理保证不仅依赖于 Pulsar 的保证，而且还与**外部系统**有关，即 **source 和 sink 的实现**。对于 source，Pulsar 可以确保向 Pulsar 主题写入消息时遵从处理保证。这是 Pulsar 可以控制的。然而对于 sink 来说，处理保证依赖于 sink 的实现。如果 sink 的实现不以幂等方式处理重试，则 sink 不遵从处理保证。
+连接器的处理保证不仅依赖于 Pulsar 保证，还**与外部系统有关**，即 **source 和 sink 的实现**。对于 source，Pulsar 可以确保向 Pulsar 主题写入消息时遵从处理保证。这是 Pulsar 可以控制的。然而对于 sink 来说，处理保证依赖于 sink 的实现。如果 sink 的实现不以幂等方式来处理重试，则 sink 不遵从处理保证。
