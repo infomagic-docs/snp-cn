@@ -2,7 +2,6 @@
 title: Pulsar Functions
 id: pulsar-function-concepts
 category: concepts
-
 ---
 
 **Pulsar Functions** 是轻量级计算程序，具有如下特点： 
