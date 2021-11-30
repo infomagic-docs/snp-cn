@@ -1,28 +1,28 @@
 ---
-title: Pub/Sub
+title: 发布/订阅
 id: pub-sub-concepts
 category: concepts
 ---
 
-Pulsar 基于 [发布-订阅](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) （通常缩写为pub-sub）。在这种模式中，[生产者](#producers)向[主题](#topics)发布消息。[消费者](#consumers)[订阅](#subscriptions)这些主题，处理收到的消息，并在处理完成后发送确认。
+Pulsar 基于[发布-订阅](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) （通常缩写为 pub-sub）。在这种模式中，[生产者](#producers)向[主题](#topics)发布消息。[消费者](#消费者)[订阅](#订阅)这些主题，处理收到的消息，并在处理完成后发送确认。
 
-创建订阅后，Pulsar 会保留所有消息，即使消费者已经断开连接，这些消息仍会保留。只有在消费者确认消息成功处理后，才会将消息丢弃。 
+创建订阅后，Pulsar 会保留所有消息，即使消费者已经断开连接，这些消息仍会保留。只有在消费者确认消息成功处理后，才会将消息丢弃。
 
 # 租户
 
 Pulsar 是从头开始创建的多租户系统。为支持多租户，Pulsar 提出了“租户”的概念。租户可以分布在多个集群中，并且每个租户都具有自己的身份验证和授权方案。租户也是可以管理存储配额、消息  TTL 和隔离策略的管理单元。
 
-如需了解关于创建租户的细节，参见 [使用租户](/user-guides/admin/work-with-tenants.md)。
+如需了解关于创建租户的细节，参见[使用租户](/user-guides/admin/work-with-tenants.md)。
 
 # 命名空间
 
-命名空间代表租户内的管理单元。在命名空间所设置的配置策略适用于在该命名空间中创建的所有主题。你可以使用 StreamNative 控制器、REST API 或 pulsar-admin CLI 工具为租户创建多个命名空间。
+命名空间代表租户内的管理单元。在命名空间所设置的配置策略适用于在该命名空间中创建的所有主题。你可以使用 StreamNative 控制器、REST API 或 pulsar-admin CLI（命令行工具）为租户创建多个命名空间。
 
-如需了解关于创建命名空间的细节，参见 [使用命名空间](/user-guides/admin/work-with-namespaces.md)。
+如需了解关于创建命名空间的细节，参见[使用命名空间](/user-guides/admin/work-with-namespaces.md)。
 
 ## 权限
 
-Pulsar 在命名空间级别（租户和集群内）对权限进行管理。可以为特定的用户授予操作列表权限，如 `消费` 和 `生产`。此外也可以撤销特定用户的权限。撤销后，这些用户将不能访问指定的命名空间。
+Pulsar 在命名空间级别（租户和集群内）对权限进行管理。可以为特定的用户授予操作列表权限，如`消费`和`生产`。此外也可以撤销特定用户的权限。撤销后，这些用户将不能访问指定的命名空间。
 
 ## Backlog quota
 
@@ -46,7 +46,7 @@ Backlog 是指由 bookie 储存的、关于某一主题的未确认消息的集�
 
 ## 调度率
 
-调度率指命名空间的主题每秒派发的消息数量。要限制调度率，可调节每秒消息数（`msg-dispatch-rate`）或每秒消息字节数（`byte-dispatch-rate`）。调度率的单位是秒，可用 `dispatch-rate-period` 配置。默认情况下，`msg-dispatch-rate` 和 `byte-dispatch-rate` 都设置为 -1，表明禁用 throttling 。
+调度率指命名空间的主题每秒派发的消息数量。要限制调度率，可调节每秒消息数（`msg-dispatch-rate`）或每秒消息字节数（`byte-dispatch-rate`）。调度率的单位是秒，可用 `dispatch-rate-period` 配置。默认情况下，`msg-dispatch-rate` 和 `byte-dispatch-rate` 都设置为 -1，表明禁用限流。
 
 # 主题
 
@@ -60,16 +60,16 @@ Backlog 是指由 bookie 储存的、关于某一主题的未确认消息的集�
 
 主题名组成 | 描述 
 :--------------------|:-----------
-`persistent` / `non-persistent` | 标识主题类型。Pulsar 支持持久化和[非持久化](#non-persistent-topics)主题。默认情况下，如果你不指定主题类型，就会创建一个持久化主题。对于持久化主题，所有的消息都持久地保存在磁盘上（如果没有独立的 broker，消息会持久地保存在多个磁盘上）。而非持久性主题的数据不会持久地保存在存储 disk 上。 
+`persistent` / `non-persistent` | 标识主题类型。Pulsar 支持持久化和[非持久化](#非持久化主题)主题。默认情况下，如果你不指定主题类型，就会创建一个持久化主题。对于持久化主题，所有的消息都持久地保存在磁盘上（如果没有独立的 broker，消息会持久地保存在多个磁盘上）。而非持久性主题的数据不会持久地保存在存储 disk 上。 
 `tenant`             | 实例中的主题租户。租户是 Pulsar 多租户的不可缺的组成部分，分布在各个集群中。 
-`namespace`          | 主题的管理单元，作为相关主题的分组机制。大多数主题配置是在[命名空间](#namespaces)级别进行的。每个租户有一个或多个命名空间。 
+`namespace`          | 主题的管理单元，作为相关主题的分组机制。大多数主题配置是在[命名空间](#命名空间)级别进行的。每个租户有一个或多个命名空间。 
 `topic`              | 名称的最后部分。`topic` 的名称在 Pulsar 实例中没有特殊含义。 
 
-无需在 Pulsar 中特别创建主题。如果客户端向尚不存在的主题写入消息、或者从不存在的主题接收消息，Pulsar 会在[主题名称](#topics)提供的命名空间下自动创建该主题。如果在客户端创建主题时没有指定租户或命名空间，那么该主题将在默认的租户和命名空间中创建。也可以在指定的租户和命名空间中创建一个主题，例如 `persistent://my-tenant/my-namespace/my-topics`。`persistent://my-tenant/my-namespace/my-topic `，指 `my-topic` 主题是在 `my-tenant` 租户的 `my-namespace` 命名空间中创建的。
+无需在 Pulsar 中特别创建主题。如果客户端向尚不存在的主题写入消息、或者从不存在的主题接收消息，Pulsar 会在[主题名称](#主题)提供的命名空间下自动创建该主题。如果在客户端创建主题时没有指定租户或命名空间，那么该主题将在默认的租户和命名空间中创建。也可以在指定的租户和命名空间中创建一个主题，例如 `persistent://my-tenant/my-namespace/my-topics`。`persistent://my-tenant/my-namespace/my-topic `，指 `my-topic` 主题是在 `my-tenant` 租户的 `my-namespace` 命名空间中创建的。
 
 ## 非持久化主题
 
-非持久化主题是指消息从未在磁盘上持久化、只是存放在内存中的主题。当使用非持久化传递时，弃用 Pulsar broker 或断开订阅者与主题的连接，非持久化主题的所有在途消息将丢失。在非持久化主题中，broker 会立即将消息传递给所有连接的订阅者，而不会在 BookKeeper 中持久保存。 
+非持久化主题是指消息从未在磁盘上持久化、只是存放在内存中的主题。当使用非持久化传递时，弃用 Pulsar broker 或断开订阅者与主题的连接，非持久化主题的所有传输消息将丢失。在非持久化主题中，broker 会立即将消息传递给所有连接的订阅者，而不会在 BookKeeper 中持久保存。 
 
 ### 性能
 
@@ -95,16 +95,16 @@ Backlog 是指由 bookie 储存的、关于某一主题的未确认消息的集�
 
 消息的排序与路径模式和消息的 key 相关。通常用户会希望有 Per-Key-partition 保证排序。
 
-如果消息上附有 key，当使用 `SinglePartition` 或 `RoundRobinPartition` 模式时，消息将根据[散列方案](#hashing-scheme)，被分配到对应的分区。 
+如果消息上附有 key，当使用 `SinglePartition` 或 `RoundRobinPartition` 模式时，消息将根据[散列 scheme](#散列-scheme)，被分配到对应的分区。 
 
  排序保证          | 描述 | 路径模式和 key                                               
 :------------------|:------------|:------------
 Per-key-partition  | 具有相同 key 的消息将按顺序排列，并被发放到相同的分区。 | 使用 `SinglePartition` 或 `RoundRobinPartition` 模式，且每个消息都有 key。 
 Per-producer       | 所有来自同一个生产者的消息将按顺序排列。                | 使用 `SinglePartition` 模式，且并未对每个消息都提供 key。 
 
-### 散列 schema
+### 散列 scheme
 
-散列 schema 是一种枚举，表示在选择用于特定消息的分区时可用的标准散列函数集。
+散列 scheme 是一种枚举，表示在选择用于特定消息的分区时可用的标准散列函数集。
 
 有2种类型的标准散列函数可用：`JavaStringHash `和 `Murmur3_32Hash`。
 对生产者来说，默认的散列函数是  `JavaStringHash`。
@@ -114,7 +114,7 @@ Per-producer       | 所有来自同一个生产者的消息将按顺序排列�
 
 当有些消息不能被消费者成功处理时，通过死信主题，消费者可以去消费新的消息。在这个机制中，未能被消费的消息将被储存到一个独立的主题中，即死信主题。你可决定如何处理死信主题中的消息。
 
-死信主题依赖消息的再传递。消息重新投递的原因可以是：[确认超时](#acknowledgement-timeout)或[否定确认 (negative acknowledgement)](#negative-acknowledgement)。如果要对消息使用否定确认，需确保在确认超时前进行否定确认。
+死信主题依赖消息的再传递。消息重新投递的原因可以是：[确认超时](#acknowledgement-timeout)或[否定确认（ negative acknowledgement）](#negative-acknowledgement)。如果要对消息使用否定确认，需确保在确认超时前进行否定确认。
 
 > **注**    
 > 当前在 [Shared](#shared) 和 [Key_Shared](#key_shared) 订阅模式下可启用死信主题。
@@ -139,7 +139,7 @@ Key | 可选，可用于标记消息，对于主题压缩等有帮助。
  生产者名            | 产生消息的生产者的名字。如果没有指定生产者的名字，则会使用默认名。 
 序列 ID | 每个 Pulsar 消息都属于相关主题的有序序列。消息的序列 ID 是它在该序列中的顺序。 
  发布时间            | 由生产者自动生成的时间戳。时间戳是由生产者自动应用的。 
- 事件时间            | 应用程序附加在消息上的可选时间戳。例如，应用程序会在消息被处理时附加一个时间戳。如果没有对事件时间进行任何设置，其值为`0`。 
+ 事件时间            | 应用程序附加在消息上的可选时间戳。例如，应用程序会在消息被处理时附加一个时间戳。如果没有对事件时间进行任何设置，其值为 `0`。 
 TypedMessageBuilder | 用来构建消息。可以通过  `TypedMessageBuilder` 设置消息属性，如消息的 key 和赋值等。 </br> 设置 `TypedMessageBuilder` 时，将 key 设置为字符串。如果把 key 设置为其他类型，如 AVRO 对象，key 就会以字节形式发送，这样就很难把 AVRO 对象发回给消费者。 
 
 ## 消息压缩
@@ -155,7 +155,7 @@ TypedMessageBuilder | 用来构建消息。可以通过  `TypedMessageBuilder` �
 
 默认情况下，Pulsar 的 broker 会立即删除所有已经被消费者确认的消息，而所有没有确认的消息则持续储存在消息 backlog 中。
 
-所有消息保留和过期都是在[命名空间](#namespaces) 水平管理的。下图解释了消息保留和过期的情况。
+所有消息保留和过期都是在[命名空间](#命名空间)水平管理的。下图解释了消息保留和过期的情况。
 
 ![Message retention and expiry](../../image/retention-expiry.png)
 
@@ -193,7 +193,7 @@ TypedMessageBuilder | 用来构建消息。可以通过  `TypedMessageBuilder` �
 
 延迟消息传递使得消费者无需立即消费一条消息，而是可以稍后消费。在这个机制中，消息被存储在 BookKeeper 中，消息被发布给 broker 后，`DelayedDeliveryTracker` 在内存中维护时间索引（time->messageId），一旦超过特定的延迟时间，消息就会被传递给消费者。 
 
-延迟消息发送只在 [Shared](#shared) 订阅模式下有效。在[Exclusive](#exclusive) 和 [Failover](#failover) 订阅模式下，延迟的消息仍会被立即发送。
+延迟消息发送只在 [Shared](#shared) 订阅模式下有效。在 [Exclusive](#exclusive) 和 [Failover](#failover) 订阅模式下，延迟的消息仍会被立即发送。
 
 下图解释了延迟消息传递的概念：
 
@@ -207,7 +207,7 @@ Broker 保存消息而不做任何检查。当消费者消费消息时，如果�
 
 ## 发送模式
 
-生产者向 broker 发送消息，发送可以是同步的 (sync) 也可以是异步的 (async)。
+生产者向 broker 发送消息，发送可以是同步的（sync） 也可以是异步的（async）。
 
 | 模式       | 描述 |
 |:-----------|-----------|
@@ -228,7 +228,7 @@ Broker 保存消息而不做任何检查。当消费者消费消息时，如果�
 >
 > 一旦某个应用程序出现一个生产者成功实现了 `Exclusive`  或  `WaitForExclusive` 访问模式，该应用程序的实例将成为该主题的**唯一创作者**。其他创作者对这一主题进行输出时，将立即得到错误提示，或等待获得  `Exclusive` 访问。 
 
-# Consumers
+# 消费者
 
 A consumer is a process that attaches to a topic via a subscription and then receives messages.
 
@@ -236,7 +236,7 @@ A consumer sends a flow permit request to a broker to get messages. There is a q
 
 ## 接收模式
 
-从 broker 收到的消息可以是同步的 (sync)，也可以是异步的 (async)。
+从 broker 收到的消息可以是同步的（ sync），也可以是异步的（async）。
 
 | 模式     | 描述                                                         |
 | :------- | :----------------------------------------------------------- |
@@ -245,7 +245,7 @@ A consumer sends a flow permit request to a broker to get messages. There is a q
 
 ## 确认
 
-当消费者成功地消费消息，消费者会向 broker 发送确认请求。这个消息将被永久保存，只有在所有订阅者都确认后才会删除。如果你想存储已经被消费者确认的消息，你需要配置[消息保留策略](#message-retention-and-expiry)。
+当消费者成功地消费消息，消费者会向 broker 发送确认请求。这个消息将被永久保存，只有在所有订阅者都确认后才会删除。如果你想存储已经被消费者确认的消息，你需要配置[消息保留策略](#消息保留策略)。
 
 对于一个批处理消息，如果启用了批索引确认，broker 会保持批索引的确认状态，并跟踪每个批索引的确认状态，以避免将确认的消息调度给消费者。该批消息的所有索引都被确认后，该批消息将被删除。
 
@@ -342,12 +342,12 @@ Exclusive 和灾备订阅模式中，消费者只对最后收到的消息进行�
 
 消费者订阅一个 Pulsar 主题时，默认情况下是订阅一个特定主题，例如 `persistent://public/default/my-topic`。Pulsar 消费者也可同时订阅多个主题。可以通过两种方式定义主题列表。
 
-* 基于 [**regular expression**](https://en.wikipedia.org/wiki/Regular_expression) (regex)，例如：persistent://public/default/finance-.*`
+* 基于 [**regular expression**](https://en.wikipedia.org/wiki/Regular_expression)（regex），例如：`persistent://public/default/finance-.*`
 * 通过明确指定的主题列表。
 
 > **注**
 > 
-> 当通过 regex 订阅多个主题时，所有的主题必须是在同一个[命名空间](#namespaces)。 
+> 当通过 regex 订阅多个主题时，所有的主题必须是在同一个[命名空间](#命名空间)。 
 
 订阅多个主题时，Pulsar 客户端会自动调用 API 来发现符合 regex 模式/列表的主题，然后订阅所有这些主题。如果暂时不存在主题，则一旦创建相关主题，消费者就会自动订阅它们。
 
