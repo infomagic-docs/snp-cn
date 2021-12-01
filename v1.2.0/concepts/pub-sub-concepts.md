@@ -230,9 +230,9 @@ Broker 保存消息而不做任何检查。当消费者消费消息时，如果�
 
 # 消费者
 
-A consumer is a process that attaches to a topic via a subscription and then receives messages.
+消费者是通过订阅附加到主题上、然后接收消息的过程。
 
-A consumer sends a flow permit request to a broker to get messages. There is a queue at the consumer side to receive messages pushed from the broker. You can configure the queue size with the `receiverQueueSize` parameter. The default size is `1000`). Each time `consumer.receive()` is called, a message is dequeued from the buffer.  
+消费者向 broker 发送流许可请求以获得消息。在消费者一方有队列来接收从 broker 推送的消息。你可以用 `receiverQueueSize` 参数配置队列大小。默认值为 `1000`）。每次调用 `consumer.receive()` 时，都会从缓冲区获取到一条消息。 
 
 ## 接收模式
 
