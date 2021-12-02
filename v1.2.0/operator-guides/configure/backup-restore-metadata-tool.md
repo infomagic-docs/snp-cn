@@ -1,20 +1,22 @@
 ---
-title: Backup and restore with metadata tool
+title: 使用元数据工具备份和恢复
 id: backup-restore-metadata-tool
 category: operator-guides
 ---
 
-StreamNative Platform is a distributed messaging system with multi-layer architecture and uses Apache ZooKeeper as the metadata service. Both StreamNative Platform storage layer and ZooKeeper provide multiple data replicas. To further enhance data fault tolerance and prevent data loss, you can backup and restore with the metadata tool. Currently, the tool enables you to backup and restore Pulsar cluster’s metadata to or from the cloud storage.
+StreamNative Platform 是具有多层架构的分布式消息系统，使用 Apache ZooKeeper 作为元数据服务。StreamNative Platform 存储层和 ZooKeeper 都提供了多个数据副本。为了进一步提高数据容错性，防止数据丢失，可以用元数据工具进行备份和恢复。目前该工具可以将 Pulsar 集群的元数据备份到云存储或从云存储中恢复元数据。
 
-# Backup ZooKeeper metadata
+ 
 
-By default, the backup service is disabled. To enable the backup service, you need to set the `backup` to `true`, set the bucket and secrets accordingly in the `values.yaml` file that you want to deploy your cluster. 
+# 备份 ZooKeeper 元数据
 
-To backup ZooKeeper metadata of your cluster, complete the following steps:
+默认情况下，备份服务是禁用的。要启用备份服务，需要将 `backup` 设置为  `true`，在需要部署集群的 `values.yaml` 文件中对 bucket 和 secret 进行相应的设置。
 
-1. Create a bucket in AWS S3 to save the backup files.
-2. Create the credential to access AWS S3.
-3. Create a secret to save your AWS credentials with the following command.
+按照如下步骤备份集群的 ZooKeeper 元数据：
+
+1. 在 AWS S3 中创建一个 bucket 以保存备份文件。
+2. 新建访问 AWS S3 的凭证。
+3. 用以下命令创建一个 secret 来保存 AWS 凭证。
 
 	```bash
 	kubectl create secret generic aws-secret          --from-literal=AWS_ACCESS_KEY_ID=<YOUR_ACCESS_KEY_ID>    --from-literal=AWS_SECRET_ACCESS_KEY=<YOUR_AWS_SECRET_ACCESS_KEY>
@@ -23,20 +25,21 @@ To backup ZooKeeper metadata of your cluster, complete the following steps:
 4. Enable backup service in the ZooKeeper customTools section in the `values.yaml` file.
 
 	```yaml
+
  	backup:
-   	  component: "backup"
-      enable: true
-   	  webServerPort: "8088"
-	  backupInterval: "600"
-      bucket: "s3a://<your-bucket-name>"
-      backupPrefix: "pulsar-backup"
-      managedLedgerPath: "/managed-ledgers"
-      configData:
-      secrets:
-       	use: true
-         aws:
-           secretName: "aws-secret"
-	```
+ 	  component: "backup"
+ 	  enable: true
+ 	  webServerPort: "8088"
+ 	  backupInterval: "600"
+ 	  bucket: "s3a://<your-bucket-name>"
+ 	  backupPrefix: "pulsar-backup"
+ 	  managedLedgerPath: "/managed-ledgers"
+ 	  configData:
+ 	  secrets:
+ 	   	use: true
+ 	     aws:
+ 	       secretName: "aws-secret"
+ 	```
 
 5. Create your cluster with the `values.yaml` file.
 
@@ -63,18 +66,19 @@ By default, the restore service is disabled. To restore your cluster to a backup
 2. Enable the restore service in the ZooKeeper customTools section in the `values.yaml` file that you use to deploy the cluster.
 
 	```yaml
+
  	restore:
-  	   component: "restore"
-  	   enable: true
-  	   restorePoint: "s3a://<your-bucket-name>/<backup-file>"
-   	   restoreVersion: "1"
-   	   bucket: "s3a://<your-bucket-name>"
-       configData:
-       secrets:
-       	use: true
-         aws:
-           secretName: "aws-secret"
-	```
+ 	   component: "restore"
+ 	   enable: true
+ 	   restorePoint: "s3a://<your-bucket-name>/<backup-file>"
+ 	   restoreVersion: "1"
+ 	   bucket: "s3a://<your-bucket-name>"
+ 	   configData:
+ 	   secrets:
+ 	   	use: true
+ 	     aws:
+ 	       secretName: "aws-secret"
+ 	```
 
 3. Restore your cluster with the `values.yaml`.
 
