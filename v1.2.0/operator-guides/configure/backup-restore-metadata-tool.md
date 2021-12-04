@@ -22,7 +22,7 @@ StreamNative Platform 是具有多层架构的分布式消息系统，使用 Apa
 	kubectl create secret generic aws-secret          --from-literal=AWS_ACCESS_KEY_ID=<YOUR_ACCESS_KEY_ID>    --from-literal=AWS_SECRET_ACCESS_KEY=<YOUR_AWS_SECRET_ACCESS_KEY>
 	```
 
-4. Enable backup service in the ZooKeeper customTools section in the `values.yaml` file.
+4. 在 `values.yaml` 文件的 ZooKeeper customTools 部分启用备份服务。 
 
 	```yaml
 
@@ -41,29 +41,29 @@ StreamNative Platform 是具有多层架构的分布式消息系统，使用 Apa
  	       secretName: "aws-secret"
  	```
 
-5. Create your cluster with the `values.yaml` file.
+5. 用 `values.yaml` 文件创建集群。
 
 	```bash
 	helm install  -f values.yaml snpe $PULSAR_CHART/  --set initialize=true --set namespace=snpe
 	```
 
-6. Check whether the backup service is running.
+6. 检查备份服务是否正在运行。 
 
 	```bash
 	kubectl get pods snpe-restore-pulsar-backup-0
 	```
 	
-	If the status is `running`, the backup service starts. You can also check the backup files in your bucket.
+	如果状态是  `running`，则备份服务已经开始。你也可以检查 bucket 中的备份文件。 
 
-# Restore metadata from an old cluster
+# 从旧集群中恢复元数据 
 
-The restore service works only when you start a new cluster by using the old backup metadata, and it only restores data from tiered storage. If a cluster is running, you cannot restore it.
+只有在使用旧的备份元数据启动新的集群时，恢复服务才发挥作用，而且它仅从分层储存中回复数据。如果集群正在运行，则就不能恢复该集群。
 
-By default, the restore service is disabled. To restore your cluster to a backup point, complete the following steps:
+默认情况下，恢复服务是禁用的。要将集群恢复到备份点，请完成以下步骤： 
 
-1. Decide the restore point by finding a restore file from your bucket, for example: `s3a://my-backuprestore/pulsar-backup-1623721488825.tar.gz`.
+1. 通过从 bucket 中查找还原文件来确定还原点，例如：`s3a://my-backuprestore/pulsar-backup-1623721488825.tar.gz`。 
 
-2. Enable the restore service in the ZooKeeper customTools section in the `values.yaml` file that you use to deploy the cluster.
+2. 在用于部署集群的  `values.yaml`  文件中的 ZooKeeper customTools 部分启用还原服务。 
 
 	```yaml
 
@@ -80,54 +80,54 @@ By default, the restore service is disabled. To restore your cluster to a backup
  	       secretName: "aws-secret"
  	```
 
-3. Restore your cluster with the `values.yaml`.
+3. 使用  `values.yaml`  恢复集群。 
 
 	```bash
 	helm install  -f values.yaml snpe $PULSAR_CHART/  --set initialize=true --set namespace=snpe
 	```
 
-4. Check the restore service and make sure that ZooKeeper pods start.
+4. 检查恢复服务并确保 ZooKeeper pod 启动。 
 
 	```bash
 	kubectl get pods | grep zookeeper
 	```
-	You can also check the topics and namespaces created in the new cluster.
+	还可以查看在新集群中创建的主题和命名空间。
 
-# Configuration
+# 配置
 
-The following table lists the properties, description and default values of the backup and restore services.
+下表列出了备份和恢复服务的属性、描述和默认值。
 
-| Property | Description | Default value |
+| 属性 | 描述 | 默认值                |
 | -------- | ----------- | ------------- |
-| webServerPort | The backup HTTP service port for metrics and administration. | 8088 |
-| backupInterval | The backup service running interval. The time unit is measured in seconds. | 600 |
-| bucket | The bucket for saving backup files. | s3a://metadata-backup |
-| backupPrefix | The prefix of the backup file name. | metadata-backup |
-| managedLedgerPath | The Pulsar managed ledger path in ZooKeeper.  | /managed-ledgers |
-| restorePoint | The specific time point that you want to restore your cluster. You can set the `restorePoint` to a cloud storage file path to restore the cluster with a specified restore point. | |
-| restoreVersion | A unique number for restoration. If you want to restore the ZooKeeper multiple times with the same restore point, you need to specify a different restore version number for each restore. | 1 |
+| webServerPort | 用于指标和管理的备份 HTTP 服务端口。 | 8088 |
+| backupInterval | 备份服务的运行时间间隔。时间单位为秒。                       | 600 |
+| bucket | Bucket 用于保存备份文件。                                    | s3a://metadata-backup |
+| backupPrefix | 备份文件名的前缀。                                           | metadata-backup |
+| managedLedgerPath | Pulsar 管理 ZooKeeper 中 ledger 路径。                       | /managed-ledgers |
+| restorePoint | 想要恢复集群的具体时间点。可以将 `restorePoint` 设置为一个云存储文件路径，以便用指定的还原点还原集群。 | |
+| restoreVersion | 用于恢复的唯一编码。如果想用同一个还原点多次还原 ZooKeeper，则需要为每次还原指定一个不同的还原版本号。 | 1 |
 
-# Administration
+# 管理
 
-The backup service provides some REST APIs for administration.
+备份服务提供了一些用于管理的 REST API。
 
-| Endpoint | Description | Example |
+| 终点 | Description | 示例 |
 | -------- | ----------- | ------- |
-| /backup/latest | Get the latest backup file | curl localhost:8088/backup/latest |
-| /backup/list | Get all the backup files | curl localhost:8088/backup/list |
+| /backup/latest | 获得最新的备份文件 | curl localhost:8088/backup/latest |
+| /backup/list | 获得所有备份文件   | curl localhost:8088/backup/list |
 
-# Monitor
+# 监控
 
-The backup service provides the metrics endpoint to monitor the following metrics. 
+备份服务提供指标终点，以监测以下指标。 
 
-| Name | Type | Description |
+| 名称 | 类型 | 描述 |
 | ---- | ---- | ----------- |
-| backup_count | Counter | The count of running backups. |
-| backup_failure_count | Counter | The count of failed backups. |
-| backup_size_non_compressed | Gauge | The size of the backup files. |
-| backup_size_compressed | Gauge | The size of the backup compressed file. |
-| backup_size_total | Gauge | The size of all the backup compressed files. |
-| backup_execution_time_total | Gauge | The time of the backup execution process. |
-| backup_execution_time_prepare | Gauge | The time of the backup preparation process. |
-| backup_execution_time_compression | Gauge | The time of compressing the backup files. |
-| backup_execution_time_upload | Gauge | The time of uploading the backup files.|
+| backup_count | 计数器 | 正在运行的备份的数量。   |
+| backup_failure_count | 计数器 | 失败的备份数量。         |
+| backup_size_non_compressed | 标尺 | 备份文件的大小。         |
+| backup_size_compressed | 标尺 | 备份压缩文件的大小。     |
+| backup_size_total | 标尺 | 所有备份压缩文件的大小。 |
+| backup_execution_time_total | 标尺 | 备份执行过程的时间。     |
+| backup_execution_time_prepare | 标尺 | 备份准备过程的时间。     |
+| backup_execution_time_compression | 标尺 | 压缩备份文件的时间。     |
+| backup_execution_time_upload | 标尺 | 上传备份文件的时间。 |
