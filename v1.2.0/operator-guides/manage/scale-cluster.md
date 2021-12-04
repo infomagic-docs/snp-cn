@@ -1,30 +1,30 @@
 ---
-title: Scale Pulsar clusters
+title: 调节 Pulsar 集群大小
 id: scale-cluster
 category: operator-guides
 ---
 
-This document describes how to resize the Pulsar cluster based on the demand of your workload. When demand is high, you can  add nodes to scale up the cluster. When demand is low, you can scale the Pulsar cluster back down.
+本文描述了如何根据工作负载需求调整 Pulsar 集群的大小。当需求很高时，可以添加节点来扩展集群。当需求降低时，可以缩减 Pulsar 集群的规模。
 
-You can resize a Pulsar cluster by increasing or decreasing the number of Pulsar components, including the Pulsar brokers, BookKeeper, ZooKeeper, and Pulsar Proxy. In most cases, you only need to add or remove the Pulsar broker and BookKeeper nodes.
+可以通过增加或减少 Pulsar 组件的数量来调整 Pulsar 集群的大小，包括 Pulsar brokers、BookKeeper、ZooKeeper 和 Pulsar Proxy。大多数情况下只需要添加或删除 Pulsar broker 和 BookKeeper 节点。
 
-# Scale up Pulsar clusters
+# 扩展 Pulsar 集群
 
-It takes a few steps to add new nodes to a Pulsar cluster:
+需要进行如下几步的操作来向 Pulsar 集群中添加新的节点： 
 
-1. Define the configuration for each of the new nodes.
-2. Provision storage, networking, and compute resources to the nodes.
-3. Update the Pulsar cluster with the defined configurations and provisioned resources.
-4. Reassign traffic across the cluster so that the new brokers share the load.
-You should observe that the cluster’s overall performance improves.
+1. 定义每个新节点的配置。
+2. 为节点提供存储、网络和计算资源。 
+3. 使用定义的配置和提供的资源更新 Pulsar 集群。 
+4. 跨集群重新分配流量，以便新代理共享负载。 
+应当能观察到整个集群的性能有所提高。
 
-> **Note**
+> **注**
 > 
-> By default, StreamNative Platform supports automatic load balancing.
+> 默认情况下，StreamNative Platform 支持自动负载均衡。
 
-To scale up the Pulsar cluster, follow these steps.
+按照如下步骤来扩展 Pulsar 集群。
 
-1. Increase the number of nodes by setting the `replicaCount` option with a greater value in the Pulsar CRD file.
+1. 通过在 Pulsar CRD 文件中将 `replicaCount` 选项设置为更大的值来增加节点数。 
 
     ```
     broker:
@@ -32,17 +32,17 @@ To scale up the Pulsar cluster, follow these steps.
     replicaCount: 9 # In this example, scaling up from 5
     ```
 
-2. Update the Pulsar cluster with the new settings.
+2. 使用新设置更新 Pulsar 集群。
 
     ```
     helm upgrade -f PULSAR_CRD_FILE PULSAR_CLUSTER PULSAR_CHART/
     ```
 
-# Scale down Pulsar clusters
+# 缩小 Pulsar 集群
 
-To scale down the Pulsar cluster, follow these steps.
+按照如下步骤来缩小 Pulsar 集群。
 
-1. Decrease the number of nodes by setting the `replicaCount` option with a greater value in the Pulsar CRD file.
+1. 通过在 Pulsar CRD 文件中将 `replicaCount` 选项设置为更小的值来减少节点数。 
 
     ```
     broker:
@@ -50,10 +50,11 @@ To scale down the Pulsar cluster, follow these steps.
     replicaCount: 3 # In this example, scaling down from 5
     ```
 
-2. Update the Pulsar cluster with the new settings.
+2. 使用新设置更新 Pulsar 集群。
 
     ```
     helm upgrade -f PULSAR_CRD_FILE PULSAR_CLUSTER PULSAR_CHART/
     ```
 
-3. Wait an appropriate time for traffic to be replicated to other existing nodes. The time varies on the cluster size and the number of topics.
+3. 等待适当的时间，等待流量被复制到其他现有节点。等待时间会因集群大小和主题数量而不同。
+

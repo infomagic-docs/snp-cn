@@ -1,20 +1,20 @@
 ---
-title: Restart Pulsar clusters
+title: 重启 Pulsar 集群
 id: restart-cluster
 category: operator-guides
 ---
 
-You may encounter situations when it is necessary to restart a Pulsar cluster. For example,  to apply a license change or to apply a credentials change in a Kubernetes Secret.
+可能会遇到需要重启 Pulsar 集群的情况。例如在 Kubernetes Secret 中应用证书更改或应用凭证更改。
 
-To restart a Pulsar cluster, follow these steps.
+按照如下步骤重启 Pulsar 集群。
 
-1. Find the name of the StatefulSet corresponding to the Pulsar cluster that you want to restart.
+1. 找到要重启的 Pulsar 集群对应的 StatefulSet 名称。
 
     ```
     kubectl get statefulset --namespace KUBERNETES_NAMESPACE
     ```
 
-2. Restart the Pulsar cluster by using the StatefulSet name obtained from the previous step.
+2. 使用上一步获取的 StatefulSet 名称重启 Pulsar 集群。 
 
     ```
     kubectl rollout restart statefulset/STATEFULSET_NAME --namespace KUBERNETES_NAMESPACE
