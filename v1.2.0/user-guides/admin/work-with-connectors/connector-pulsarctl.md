@@ -1,30 +1,30 @@
 ---
-title: Work with connectors using pulsarctl CLI tool
+title: 使用 pulsarctl CLI 工具处理连接器 
 id: connector-pulsarctl
 category: user-guides
 ---
 
-Messaging systems are most powerful when you can easily use them with external systems like databases and other messaging systems. **Pulsar connectors** enable you to easily create, deploy, and manage connectors that interact with external systems.
+将消息系统与数据库和其他消息系统等外部系统一起使用时，才能最大程度地发挥消息系统的作用。使用 **Pulsar 连接器**，你可以轻松创建、部署和管理与外部系统交互的连接器。
 
 This document describes how to create, update, and delete connectors using the pulsarctl CLI tool. For a full list of operations supported by the pulsarctl CLI tool, see [here](https://docs.streamnative.io/pulsarctl/v2.7.0.7/).
 
-> **Note**
+> **注**
 >
-> Before working with connectors, ensure that the namespaces have been granted with the `function` permission.
+> 在使用连接器之前，确保命名空间已被给予 `function`  权限。
 
-# Create connectors
+# 新建连接器 
 
-This section describes how to create source and sink connectors.
+本节描述如何新建 source 和 sink 连接器。 
 
-## Create source connectors
+## 新建 source 连接器
 
-A source connector ingests data from an external system to Pulsar topics. This example shows how to create a source connector using the pulsarctl CLI tool.
+Source 连接器将数据从外部系统抓取到 Pulsar 主题。 下面的例子说明如何使用 pulsarctl CLI 工具创建 source 连接器。
 
-1. Connect to the target cluster using the pulsarctl CLI tool. For details, see [here](/user-guides/connect/connect-pulsar-cluster/cli-tools/connect-pulsarctl.md).
+1. 使用 pulsarctl  CLI 工具，连接到目标集群。详细信息参见[此处](/user-guides/connect/connect-pulsar-cluster/cli-tools/connect-pulsarctl.md)。
 
-2. Create a connector by specifying the specific fields. For all supported fields, see [supported source and sink configuration options](#supported-source-and-sink-configuration-options).
+2. 通过指定特定字段创建连接器。如需了解所有支持的字段，可参见[source and sink 配置支持选项](#supported-source-and-sink-configuration-options)。
 
-    This example creates a source connector named `activemq-source`.
+    本例介绍如何新建一个名为 `activemq-source` 的 source 连接器。
     
     ```
     pulsarctl sources create
@@ -38,16 +38,18 @@ A source connector ingests data from an external system to Pulsar topics. This e
     # other source configurations
     ```
 
-3. Verify that the source connector is created successfully.
+3. 验证该 source 连接器是否被成功创建。 
 
-    **Input**
+    **输入**
+    
     ```
     pulsarctl source list
     --tenant public
     --namespace default
     ```
-
-    **Output**
+    
+    **输出**
+    
     ```
     +--------------------+
     | Source Name |
@@ -55,10 +57,10 @@ A source connector ingests data from an external system to Pulsar topics. This e
     | activemq-source |
     +--------------------+
     ```
+    
+    如输出所示，source 连接器是在 `public` 租户和 `default` 命名空间下创建的。 
 
-    As shown in the output, the source connector is created under the `public` tenant and the `default` namespace.
-
-## Create sink connectors
+## 新建 sink 连接器
 
 The sink connector exports data from Pulsar topics to external systems. This example describes how to create an ActiveMQ sink connector.
 
