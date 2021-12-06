@@ -182,197 +182,200 @@ category: user-guides
 
 2. 点击目标 source 连接器，可以查看 source 连接器相关信息。 
 
-3. Update the following items about the source connector. 
+3. 更新如下有关 source 连接器的项目。 
 
-    * Tenant: configure the target tenant for the source connector.
-    * Namespace: configure the target namespace for the source connector.
-    * Output Topic: update the Pulsar topic into which the messages are ingested.
-    * Replicas: update the number of instances for running the source connector.
-    * Auto-scaling: when auto-scaling is enabled, update the maximum number of the instances for running the source connector.
-    * Config: update configurations about the source connector.
-4. Click **Update**.
+    * 租户：为 source 连接器配置目标租户。
+    * 命名空间：为 source 连接器配置目标命名空间。
+    * 输出主题：更新接收消息的 Pulsar 主题。 
+    * 复制数：更新运行 source 连接器的实例数。 
+    * 自动调节：启用自动调节时，更新运行 source 连接器的最大实例数。
+    * Config：更新 source 连接器的配置。 
+4. 点击**更新**。
 
-## Update sink connectors
+## 更新 sink 连接器
 
-To update a sink connector, follow these steps.
+按照如下步骤更新 sink 连接器。 
 
-1. From the left navigation pane, click **Connector** > **Sink**. 
-2. Click the target sink connector and you can check information about the sink connector.
-3. Update the following items about the sink connector.
-    * Tenant: configure the target tenant for the sink connector.
-    * Namespace: configure the target namespace for the sink connector.
-    * Input Topic: 
-        * Click **Add** to add one or more Pulsar topics for the sink connector. 
-        * Click **Delete** to delete one or more Pulsar topics for the sink connector.
-    * Replicas: update the number of instances for running the sink connector.
-    * Auto-scaling: when auto-scaling is enabled, update the maximum number of the instances for running the sink connector.
-    * Config: update configurations about the sink connector.
-4. Click **Update**.
+1. 从左侧导航窗格中，点击 **连接器** > **Sink**。 
+2. 点击目标 sink 连接器，可以查看 sink 连接器相关信息。 
+3. 更新如下有关 sink 连接器的项目。 
+    * 租户：为 sink 连接器配置目标租户。
+    * 命名空间：为 sink 连接器配置目标命名空间。
+    * 输入主题： 
+        * 点击**添加**为 sink 连接器添加一个或多个 Pulsar 主题。 
+        * 点击**删除**为 sink 连接器删除一个或多个 Pulsar 主题。 
+    * 复制数：更新运行 sink 连接器的实例数。 
+    * 自动调节：启用自动调节时，更新运行 sink 连接器的最大实例数。
+    * Config：更新 sink 连接器的配置。 
+4. 点击**更新**。
 
-# Clone connectors
+# 克隆连接器 
 
-If you want to create a new connector without modifying too many configurations, you can clone an existing connector and then update some of the configurations based on your requirements.
+如果需要新建连接器，但无需修改太多配置，则可以克隆现有的连接器，然后根据需求更新配置。 
 
-## Clone source connectors
+## 克隆 source 连接器
 
-To clone a source connector, follow these steps.
+按照如下步骤克隆 source 连接器。 
 
-1. From the left navigation pane, click **Connector** > **Source**. 
-2. Click the target source connector.
-3. Scroll down the page and then click **Clone**. A page is displayed, where you can configure the source connector based on your requirements.
+1. 从左侧导航窗格中，点击 **连接器** > **Source**。 
+
+2. 点击目标 source 连接器。
+
+3. 向下滚动页面，然后单击**克隆**。 将显示一个页面，可以在其中根据你的要求配置 source 连接器。 
 
    ![](../../image/clone-source.png)
 
 <table>
   <tr>
    <td>
-Field
+字段
    </td>
-   <td>Description
-   </td>
-  </tr>
-  <tr>
-   <td>Source Name
-   </td>
-   <td>Enter a name for the source connector. It is a string of characters, supporting lowercase characters, numeric characters, and the special character hyphen (-)
+   <td>描述
    </td>
   </tr>
   <tr>
-   <td>Tenant
+   <td>Source 名
    </td>
-   <td>Select the tenant for the source connector.
-   </td>
-  </tr>
-  <tr>
-   <td>Namespace
-   </td>
-   <td>Select the namespace for the source connector.
+   <td>输入 source 连接器的名称。 它是一串字符，支持小写字符、数字字符和特殊字符连字符（-）
    </td>
   </tr>
   <tr>
-   <td>Output Topic
+   <td>租户
    </td>
-   <td>Select the Pulsar topic into which the messages are ingested.
-   </td>
-  </tr>
-  <tr>
-   <td>Replicas
-   </td>
-   <td>Set the number of instances for running the source connector.
+   <td>为 source 连接器选择租户。  
    </td>
   </tr>
   <tr>
-   <td>Enable auto scaling
+   <td>命名空间
    </td>
-   <td>Enable or disable auto-scaling. If enabled, you should set the maximum number of the instances for running the source connector. The maximum number of the instances must be greater than the value of the `Replicas` and equal to or smaller than `10`.
+   <td>为 source 连接器选择命名空间。
+   </td>
+  </tr>
+  <tr>
+   <td>输出主题
+   </td>
+   <td>选择接收消息的 Pulsar 主题。
+   </td>
+  </tr>
+  <tr>
+   <td>复制数
+   </td>
+   <td>设置运行 source 连接器的实例数量。 
+   </td>
+  </tr>
+  <tr>
+   <td>启用自动调节
+   </td>
+   <td>启用或禁用自动调节。如果启用，则可设置用于运行 source 连接器的最大实例数。实例的最大数必须大于 `Replicas` 的值且等于或小于 `10`。 
    </td>
   </tr>
   <tr>
    <td>Config
    </td>
-   <td>(Optional) Configure the source connector. For detailed descriptions about configurations of the supported source connectors, see [StreamNative Hub](<a href="https://hub.streamnative.io/">https://hub.streamnative.io/</a>). If you do not configure the source connector, the connector is created with default configurations. 
+   <td>（可选）配置 source 连接器。有关支持的 source 连接器的配置的详细说明，参阅 [StreamNative Hub](<a href="https://hub.streamnative.io/">https://hub.streamnative.io/</a>)。如果不对 source 连接器进行配置，则将使用默认配置新建连接器。 
    </td>
-  </tr>
+  </tr>`Replicas` 
 </table>
 
-4. Click **Create**.
 
-## Clone sink connectors
+4. 点击**新建**。
 
-To clone a sink connector, follow these steps.
+## 克隆 sink 连接器
 
-1. From the left navigation pane, click **Connector** > **Sink**. 
-2. Click the target sink connector.
-3. Scroll down the page and then click **Clone**. A page is displayed, where you can configure the connector based on your requirements.
+按照如下步骤克隆 sink 连接器。
+
+1. 从左侧导航窗格中，点击 **连接器** > **Sink**。 
+2. 点击目标 sink 连接器。 
+3. 向下滚动页面，然后单击**克隆**。 将显示一个页面，可以在其中根据你的要求配置 sink 连接器。 
 
    ![](../../image/clone-sink.png)
 
-
 <table>
   <tr>
-   <td>Field
+   <td>字段
    </td>
-   <td>Description
-   </td>
-  </tr>
-  <tr>
-   <td>Sink Name
-   </td>
-   <td>Enter a name for the sink connector.
+   <td>描述
    </td>
   </tr>
   <tr>
-   <td>Tenant
+   <td>Sink 名
    </td>
-   <td>Select the tenant for the source connector.
-   </td>
-  </tr>
-  <tr>
-   <td>Namespace
-   </td>
-   <td>Select the namespace for the source connector.
+   <td>输入 sink 连接器的名称。
    </td>
   </tr>
   <tr>
-   <td>Input Topic
+   <td>租户
+   </td>
+   <td>为 sink 连接器选择租户。
+   </td>
+  </tr>
+  <tr>
+   <td>命名空间
+   </td>
+   <td>为 sink 连接器选择命名空间。
+   </td>
+  </tr>
+  <tr>
+   <td>输入主题
    </td>
    <td>
 <ul>
 
-<li>Click <strong>Add</strong> to add one or more Pulsar topics for the sink connector.
+<li>点击<strong>添加</strong>为 sink 连接器添加一个或多个 Pulsar 主题。
 
-<li>Click <strong>Delete</strong> to delete one or more Pulsar topics for the sink connector.
+<li>点击<strong>删除</strong>删除一个或多个 sink 连接器的 Pulsar 主题。 
 </li>
 </ul>
    </td>
   </tr>
   <tr>
-   <td>Replicas
+   <td>复制数
    </td>
-   <td>Configure the number of instances for running the sink connector.
+   <td>配置运行 sink 连接器的示例的数量。 
    </td>
   </tr>
   <tr>
-   <td>Enable auto scaling
+   <td>启用自动调节 
    </td>
-   <td>Enable or disable auto-scaling. If enabled, you should set the maximum number of the instances for running the sink connector. The maximum number of the instances must be greater than the value of the `Replicas` and equal to or smaller than `10`.
+   <td>启用或禁用自动调节。如果启用，则可设置用于运行 sink 连接器的最大实例数。实例的最大数必须大于 `Replicas` 的值且等于或小于 `10`。
    </td>
   </tr>
   <tr>
    <td>Config
    </td>
-   <td>(Optional) Configure the sink connector. For detailed descriptions about configurations of the supported sink connectors, see [StreamNative Hub](<a href="https://hub.streamnative.io/">https://hub.streamnative.io/</a>). If you do not configure the source connector, the connector is created with default configurations. 
+   <td>（可选）配置 sink 连接器。有关支持的 sink 连接器的配置的详细说明，参阅 [StreamNative Hub](<a href="https://hub.streamnative.io/">https://hub.streamnative.io/</a>)。如果不对 sink 连接器进行配置，则将使用默认配置新建连接器。 
    </td>
   </tr>
 </table>
 
-4. Click **Create**.
+4. 点击**新建**。
 
-# Delete connectors
+# 删除连接器 
 
-This section describes how to delete source and sink connectors.
+本节描述如何删除 source 和 sink 连接器。 
 
-## Delete source connectors
+## 删除 source 连接器
 
-To delete a source connector, follow these steps.
+按照如下步骤删除 source 连接器。 
 
-1. From the left navigation pane, click **Connector** > **Source**. 
-2. Click the target source connector and then scroll down the page.
-3. Click **Delete Source**. 
+1. 从左侧导航窗格中，点击 **连接器** > **Source**。
+2. 点击目标 source 连接器，然后向下滚动页面。 
+3. 点击**删除 Source**。
   
    ![](../../image/delete-source.png)
 
-4. Enter the source connector name and then click **Confirm**.
+4. 输入 source 连接器名，点击**确认**。
 
-## Delete sink connectors
+## 删除 sink 连接器
 
-To delete a sink connector, follow these steps.
+按照如下步骤删除 sink 连接器。 
 
-1. From the left navigation pane, click **Connector** > **Sink**. 
-2. Click the target sink connector and then scroll down the page. 
-3. Click **Delete Sink**. A dialog box is displayed.
+1. 从左侧导航窗格中，点击 **连接器** > **Sink**。
+
+2. 点击目标 source 连接器，然后向下滚动页面。 
+
+3. 点击**删除 Sink**。出现对话框。 
 
    ![](../../image/delete-sink.png)
 
-4. Enter the sink connector name and then click **Confirm**.
-
+4. 输入 sink 连接器名，点击**确认**。
