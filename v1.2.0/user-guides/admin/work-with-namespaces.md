@@ -141,38 +141,35 @@ Deleted example-tenant/example-ns successfully
     <tr>
     <td>In Throughput 
     </td>
-    <td>命名空间的入口通量。
+    <td>命名空间的入口吞吐量。
     </td>
     </tr>
     <tr>
     <td>Out Throughput
     </td>
-    <td>命名空间的出口通量。
+    <td>命名空间的出口吞吐量。
     </td>
     </tr>
     </table>
 
 4. 选择**主题**选项卡，检查可用于命名空间的主题数量和有关主题的统计信息。此外还可以创建新主题并更新特定主题。
 
-## 卸载命名空间 bundle
+## 卸载命名空间的 bundle
 
 为了方便分配，命名空间被划分成一个 bundle 列表，每个 bundle 包含命名空间整体哈希范围的一部分。默认情况下，每个命名空间支持四个 bundle。
 
 按照以下步骤操作卸载命名空间的 bundle。
 
-1. From the left navigation pane, click **Namespaces**.
+1. 在左侧导航窗格中，点击**命名空间**。 
+2. 选择**概览**选项卡。
+3. 分别从下拉列表中选择目标租户和命名空间。
+4. 在 **Bundle** 部分，从**集群**下拉列表中选择目标集群，然后单击**全部卸载（Unload All）**，即可从集群中卸载所有命名空间包。
 
-2. Select the **OVERVIEW** tab.
+5. 在 **Bundle** 部分，点击特定包旁边的**卸载（Unload）**以卸载命名空间的 bundle。 
 
-3. Select the target tenant and namespace from the drop-down lists respectively.
+## 拆分命名空间的 bundle 
 
-4. At the **Bundle** section, select the target cluster from the **Cluster** drop-down list, and then click **Unload All** to unload all namespace bundles from the cluster.
-
-5. At the **Bundle** section, click **Unload** next to a specific bundle to unload the bundle for the namespace.
-
-## Split namespace bundles
-
-Since the load for topics in a bundle might change over time, one bundle can be split in two bundles by brokers. Then, the new smaller bundles are reassigned to different brokers. By default, the newly split bundles are immediately offloaded to other brokers to facilitate the traffic distribution.
+由于 bundle 中主题的负载可能会随时间变化，因此 broker 可以将一个 bundle 拆分成两个 bundle。 然后新的较小的 bundle 被重新分配给不同的 broker。默认情况下，新拆分的 bundle 会立即卸载给其他的 broker 以促进流量分配。
 
 To split bundles for a namespace, follow these steps.
 
