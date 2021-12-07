@@ -62,13 +62,13 @@ Source 连接器将数据从外部系统抓取到 Pulsar 主题。 下面的例�
 
 ## 新建 sink 连接器
 
-The sink connector exports data from Pulsar topics to external systems. This example describes how to create an ActiveMQ sink connector.
+Sink 连接器将 Pulsar 主题中的数据导出到外部系统。如下示例描述如何创建 ActiveMQ sink 连接器。
 
-1. Connect to the target cluster using the pulsarctl CLI tool. For details, see [here](/user-guides/connect/connect-pulsar-cluster/cli-tools/connect-pulsarctl.md).
+1. 使用 pulsarctl CLI 工具连接到目标集群。详细信息参见[此处](/user-guides/connect/connect-pulsar-cluster/cli-tools/connect-pulsarctl.md)。
 
-2. Create a sink connector by specifying the specific fields. For all supported fields, see [supported source and sink configuration options](#supported-source-and-sink-configuration-options).
+2. 通过指定特定字段创建 sink 连接器。如需查看所有支持的字段，参见[source and sink 配置支持选项](#supported-source-and-sink-configuration-options)。 
 
-    This example creates a sink connector named `activemq-sink`.
+    如下示例介绍如何新建一个名为 `activemq-sink` 的 sink 连接器。
 
     ```
     pulsarctl sink create
@@ -81,9 +81,9 @@ The sink connector exports data from Pulsar topics to external systems. This exa
     # other sink configurations
     ```
 
-3. Verify that the sink connector is created successfully.
+3. 验证该 sink 连接器是否被成功创建。
 
-    **Input**
+    **输入**
 
     ```
     pulsarctl source list
@@ -91,7 +91,7 @@ The sink connector exports data from Pulsar topics to external systems. This exa
     --namespace default
     ```
 
-    **Output**
+    **输出**
 
     ```
     +--------------------+
@@ -101,33 +101,35 @@ The sink connector exports data from Pulsar topics to external systems. This exa
     +--------------------+
     ```
 
-    As shown in the output, the sink connector is created under the `public` tenant and the `default` namespace.
+    如输出所示，sink 连接器是在 `public` 租户和 `default` 命名空间下创建的。
 
-# Update connectors
+# 更新连接器 
 
-When you want to modify sink or sink configurations, or update resources for a sink or source connector, you can update connectors.
+如果想要修改 sink 或 sink 连接器的配置，或者更新 source 或 source 连接器，可以对连接器进行更新。
 
-This example shows how to update the parallelism of the activemq-sink sink connector to 2.
+如下示例显示如何将 activemq-sink 连接器的并行度更新为 2。 
 
-**Input**
+**输入**
+
 ```
 pulsarctl sinks update \
 --name activemq-sink \
 --parallelism 2
 ```
 
-**Output**
+**输出**
+
 ```
 Updated successfully
 ```
 
-# Delete connectors
+# 删除连接器 
 
-When you want to remove a connector from a tenant or namespace, you can use the pulsarctl CLI tool to delete the connector.
+如果想要从租户或者命名空间中移除连接器，可以使用 pulsarctl CLI 工具来删除连接器。
 
-This example shows how to delete the `activemq-sink` sink connector.
+如下示例显示如何删除 `activemq-sink` sink 连接器。
 
-**Input**
+**输入**
 
 ```
 pulsarctl sinks delete \
@@ -136,14 +138,16 @@ pulsarctl sinks delete \
 --name activemq-sink
 ```
 
-**Output**
+**输出**
+
 ```
 "Deleted successfully"
 ```
 
-You can use the `pulsarctl sinks get` command to verify that the sink connector is deleted successfully.
+可以使用 `pulsarctl sinks get` 命令来验证接收器连接器是否已被成功删除。
 
-**Input**
+**输入**
+
 ```
 pulsarctl sinks get \
 --tenant public \
@@ -151,66 +155,67 @@ pulsarctl sinks get \
 --name activemq-sink
 ```
 
-**Output**
+**输出**
+
 ```
 HTTP 404 Not Found
 
 Reason: Sink activemq-sink doesn't exist
 ```
-The result shows that the sink connector does not exist.
+这样的结果就表明 sink 连接器已不存在。 
 
-# Supported source and sink configuration options
+# Source and sink 配置支持选项  
 
-This section lists all supported configuration options for the source and sink connector.
+本节介绍 source 和 sink 连接器支持的所有配置选项。 
 
-## Source configuration options
+## Source 配置选项 
 
-This table lists all fields available for creating a source connector.
+下表列出新建 source 连接器的所有字段。 
 
-|Field|Description|
+|字段|描述|
 |----|---|
-| `-a`, `--archive` | The path to the NAR archive for the source. <br> It also supports url-path (http/https/file [file protocol assumes that file already exists on worker host]) from which worker can download the package.
-| `--classname` | The source's class name if `archive` is file-url-path (file://).
-| `--cpu` | The CPU (in cores) that needs to be allocated per source instance (applicable only to Docker runtime).
-| `--deserialization-classname` | The SerDe classname for the source.
-| `--destination-topic-name` | The Pulsar topic to which data is sent.
-| `--disk` | The disk (in bytes) that needs to be allocated per source instance (applicable only to Docker runtime).
-|`--name` | The source's name.
-| `--namespace` | The source's namespace.
-| ` --parallelism` | The source's parallelism factor, that is, the number of source instances to run.
-| `--processing-guarantees` | The processing guarantees (also named as delivery semantics) applied to the source. A source connector receives messages from the external system and writes messages to a Pulsar topic. The `--processing-guarantees` ensures the processing guarantees for writing messages to the Pulsar topic. <br>The available values are ATLEAST_ONCE, ATMOST_ONCE, EFFECTIVELY_ONCE.
-| `--ram` | The RAM (in bytes) that needs to be allocated per source instance (applicable only to the process and Docker runtimes).
-| `-st`, `--schema-type` | The schema type.<br> Either a builtin schema (for example, AVRO and JSON) or custom schema class name to be used to encode messages emitted from source.
-| `--source-config` | Source config key/values.
-| `--source-config-file` | The path to a YAML config file specifying the source's configuration.
-| `-t`, `--source-type` | The source's connector provider.
-| `--tenant` | The source's tenant.
-|`--producer-config`| The custom producer configuration (as a JSON string).
+| `-a`, `--archive` | Source 的 NAR 存档的路径。 <br/>同样支持 url-path（http/https/file [文件协议名，假定文件已经存在于工作主机上]），工作人员可以从该路径下载包。 |
+| `--classname` | 对于 `archive` 是 file-url-path (file://) 的情况下，为 source 的类名。 |
+| `--cpu` | 需要为每个 source 的实例分配的 CPU（以核为单位）（仅适用于 Docker 运行时）。 |
+| `--deserialization-classname` | Source 的 SerDe 类名。 |
+| `--destination-topic-name` | 作为数据发送对象的 Pulsar 主题。 |
+| `--disk` | 需要为每个 source 实例分配的磁盘数（以字节为单位）（仅适用于 Docker 运行时）。 |
+|`--name` | Source 的名称。 |
+| `--namespace` | Source 的命名空间。 |
+| ` --parallelism` | Source 的并行度因子，即运行 source 的实例的数量。 |
+| `--processing-guarantees` | 应用于 source 的处理保证（也称为传递语义）。Source 连接器从外部系统接收消息并将消息写入 Pulsar 主题。`--processing-guarantees` 确保将消息写入 Pulsar 主题的处理保证。 <br/>可用的值有 ATLEAST_ONCE、ATMOST_ONCE、EFFECTIVELY_ONCE。 |
+| `--ram` | 需要为每个 source 实例分配的 RAM（以字节为单位）（仅适用于进程和 Docker 运行时）。 |
+| `-st`, `--schema-type` | Schema 的类型。<br>用于编码从 source 发出的消息的内置 schema（例如，AVRO 和 JSON）或自定义 schema 类名称。 |
+| `--source-config` | Source config key/值。 |
+| `--source-config-file` | 指定 source 配置的 YAML 配置文件的路径。 |
+| `-t`, `--source-type` | Source 连接器的供应方。 |
+| `--tenant` | Source 的租户。 |
+|`--producer-config`| 自定义生产者配置项（为 JSON 字符串） |
 
-## Sink configuration option
+## Sink 配置选项
 
-This table lists all fields available for creating a sink connector.
+下表列出新建 sink 连接器的所有字段。
 
-|Field|Description|
+|字段|描述|
 |----|---|
-| `-a`, `--archive` | The path to the archive file for the sink. <br> It also supports url-path (http/https/file [file protocol assumes that file already exists on worker host]) from which worker can download the package.
-| `--auto-ack` |  Whether or not the framework will automatically acknowledge messages.
-| `--classname` | The sink's class name if `archive` is file-url-path (file://).
-| `--cpu` | The CPU (in cores) that needs to be allocated per sink instance (applicable only to Docker runtime).
-| `--custom-schema-inputs` | The map of input topics to schema types or class names (as a JSON string).
-| `--custom-serde-inputs` | The map of input topics to SerDe class names (as a JSON string).
-| `--disk` | The disk (in bytes) that needs to be allocated per sink instance (applicable only to Docker runtime).
-|`-i, --inputs` | The sink's input topic or topics (multiple topics can be specified as a comma-separated list).
-|`--name` | The sink's name.
-| `--namespace` | The sink's namespace.
-| ` --parallelism` | The sink's parallelism factor, that is, the number of sink instances to run.
-| `--processing-guarantees` | The processing guarantees (also known as delivery semantics) applied to the sink. The `--processing-guarantees` implementation in Pulsar also relies on sink implementation. <br>The available values are ATLEAST_ONCE, ATMOST_ONCE, EFFECTIVELY_ONCE.
-| `--ram` | The RAM (in bytes) that needs to be allocated per sink instance (applicable only to the process and Docker runtimes).
-| `--retain-ordering` | Sink consumes and sinks messages in order.
-| `--sink-config` | Sink config key/values.
-| `--sink-config-file` | The path to a YAML config file specifying the sink's configuration.
-| `-t`, `--sink-type` | The sink's connector provider. The `sink-type` parameter of the currently built-in connectors is determined by the setting of the `name` parameter specified in the pulsar-io.yaml file.
-| `--subs-name` | Pulsar source subscription name if user wants a specific subscription-name for input-topic consumer.
-| `--tenant` | The sink's tenant.
-| `--timeout-ms` | The message timeout in milliseconds.
-| `--topics-pattern` | The topic pattern to consume from a list of topics under a namespace that matches the pattern. <br>`--input` and `--topics-Pattern` are mutually exclusive. <br>Add SerDe class name for a pattern in `--customSerdeInputs` (supported for Java function only).
+| `-a`, `--archive` | Sink 的存档的路径。 <br/>同样支持 url-path（http/https/file [文件协议名，假定文件已经存在于工作主机上]），工作人员可以从该路径下载包。 |
+| `--auto-ack` | 框架是否会自动确认消息。 |
+| `--classname` | 在 `archive` 为 file-url-path (file://) 的情况下，为 sink 的类名。 |
+| `--cpu` | 需要为每个 sink 的实例分配的 CPU（以核为单位）（仅适用于 Docker 运行时）。 |
+| `--custom-schema-inputs` | 输入主题到 schema 类别或类名称的映射（为 JSON 字符串）。 |
+| `--custom-serde-inputs` | 输入主题到 SerDe 类名称的映射（为 JSON 字符串）。 |
+| `--disk` | 需要为每个 sink 实例分配的磁盘（以字节为单位）（仅适用于 Docker 运行时）。 |
+|`-i, --inputs` | Sink 的输入主题或主题（多个主题可以表示为以逗号分隔的列表）。 |
+|`--name` | Sink 的名称。 |
+| `--namespace` | Sink 的命名空间。 |
+| ` --parallelism` | Sink 的并行度因子，即运行 sink 的实例的数量。                |
+| `--processing-guarantees` | 应用于 sink 的处理保证（也称为传递语义）。`--processing-guarantees` 在 Pulsar 上的实现也依赖于 sink 的实现。<br/>可用的值有 ATLEAST_ONCE、ATMOST_ONCE、EFFECTIVELY_ONCE。 |
+| `--ram` | 需要为每个 sink 实例分配的 RAM（以字节为单位）（仅适用于进程和 Docker 运行时）。 |
+| `--retain-ordering` | Sink 按顺序消费和汇入信息。 |
+| `--sink-config` | Sink config key/值。 |
+| `--sink-config-file` | 指定 sink 配置的 YAML 配置文件的路径。 |
+| `-t`, `--sink-type` | Sink 连接器的供应方。当前内置连接器的 `sink-type` 参数由 pulsar-io.yaml 文件中指定的 `name` 参数的设置决定。 |
+| `--subs-name` | 用于用户想要为输入主题消费者指定特定的订阅名称时，表示 Pulsar 源订阅名称。 |
+| `--tenant` | Sink 的租户。 |
+| `--timeout-ms` | 消息超时（以毫秒为单位）。 |
+| `--topics-pattern` | 要从与模式匹配的命名空间下的主题列表中消费的主题模式。 <br/>`--input` 和 `--topics-Pattern` 是互斥的。 <br/>在 `--customSerdeInputs` 中为模式添加 SerDe 类名（仅支持 Java 函数）。 |
