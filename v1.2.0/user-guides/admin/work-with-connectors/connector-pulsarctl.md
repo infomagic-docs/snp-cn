@@ -6,7 +6,7 @@ category: user-guides
 
 将消息系统与数据库和其他消息系统等外部系统一起使用时，才能最大程度地发挥消息系统的作用。使用 **Pulsar 连接器**，你可以轻松创建、部署和管理与外部系统交互的连接器。
 
-This document describes how to create, update, and delete connectors using the pulsarctl CLI tool. For a full list of operations supported by the pulsarctl CLI tool, see [here](https://docs.streamnative.io/pulsarctl/v2.7.0.7/).
+本文介绍如何使用 pulsarctl CLI 工具新建、更新和删除连接器。有关 pulsarctl CLI 工具支持的操作的完整列表，参见[此处](https://docs.streamnative.io/pulsarctl/v2.7.0.7/)。
 
 > **注**
 >
@@ -164,7 +164,7 @@ Reason: Sink activemq-sink doesn't exist
 ```
 这样的结果就表明 sink 连接器已不存在。 
 
-# Source and sink 配置支持选项  
+# Source 和 sink 配置支持选项  
 
 本节介绍 source 和 sink 连接器支持的所有配置选项。 
 
@@ -198,7 +198,7 @@ Reason: Sink activemq-sink doesn't exist
 
 |字段|描述|
 |----|---|
-| `-a`, `--archive` | Sink 的存档的路径。 <br/>同样支持 url-path（http/https/file [文件协议名，假定文件已经存在于工作主机上]），工作人员可以从该路径下载包。 |
+| `-a`, `--archive` | Sink 的存档的路径。 <br/>同样支持 url-path（http/https/file [文件协议名，假定文件已经存在于工作主机上]），worker 可以从该路径下载包。 |
 | `--auto-ack` | 框架是否会自动确认消息。 |
 | `--classname` | 在 `archive` 为 file-url-path (file://) 的情况下，为 sink 的类名。 |
 | `--cpu` | 需要为每个 sink 的实例分配的 CPU（以核为单位）（仅适用于 Docker 运行时）。 |

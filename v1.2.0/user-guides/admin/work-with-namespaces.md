@@ -1,50 +1,50 @@
 ---
-title: Work with namespaces
+title: 关于命名空间的操作
 id: work-with-namespaces
 category: user-guides
 ---
 
-In Pulsar, a namespace is the administrative unit nomenclature within a tenant. This document describes how to create and manage namespaces for a cluster using the pulsarctl CLI tool or the StreamNative Console.
+Pulsar 中，租户内将命名空间作为管理单元的命名法。本文介绍如何使用 pulsarctl CLI 工具或 StreamNative 控制台为集群创建和管理命名空间。
 
-# Work with namespaces using the pulsarctl CLI tool
+# 使用 pulsarctl CLI 工具操作命名空间
 
-You can create and manage namespaces using the pulsarctl CLI tool. For a full list of supported operations on namespaces, see the [pulsarctl command reference](https://docs.streamnative.io/pulsarctl/v2.7.0.7/#-em-update-em--32).
+可以使用 pulsarctl CLI 工具创建和管理命名空间。有关命名空间支持操作的完整列表，参阅 [pulsarctl 命令参考](https://docs.streamnative.io/pulsarctl/v2.7.0.7/#-em-update-em--32)。
 
-> **Note**
+> **注**
 > 
-> This section uses a tenant named `example-tenant` as an example. For details about how to create a tenant, see [work with tenants](/user-guides/admin/work-with-tenants.md).
+> 本节使用名为 `example-tenant` 的租户举例。关于如何创建租户的详细内容，参见[关于租户的操作](/user-guides/admin/work-with-tenants.md)。
 
-## Create namespaces
+## 新建命名空间
 
-After creating and authorizing a tenant, you can create and manage namespaces and topics.
+创建和授权租户后，就可以创建和管理命名空间和主题。 
 
-This example shows how to create a namespace named `example-ns` for `example-tenant`.
+如下示例介绍如何为 `example-tenant` 创建一个名为 `example-ns` 的命名空间。 
 
-**Input**
+**输入**
 
 ```
 pulsarctl namespaces create example-tenant/example-ns
 ```
 
-**Output**
+**输出**
 
 ```
 Created example-tenant/example-ns successfully
 ```
 
-## Clear namespace backlog
+## 清空命名空间 backlog
 
-Pulsar stores all unacknowledged messages in backlogs until they are processed and acknowledged. You can clear backlogs of messages for a specific namespace to release more backlog quota for the namespace.
+Pulsar 将所有未确认的消息存储在 backlog 中，直到它们被处理和确认。可以清除特定命名空间的 backlog，以释放更多命名空间的存储配额。 
 
-This example shows how to clear the backlog for all topics of `example-tenant/example-ns`.
+如下示例介绍如何清除 `example-tenant/example-ns`的所有主题的 backlog。 
 
-**Input**
+**输入**
 
 ```
 pulsarctl namespaces clear-backlog example-tenant/example-ns
 ```
 
-**Output**
+**输出**
 
 ```
 Are you sure you want to clear the backlog? (Y or N)
@@ -54,111 +54,111 @@ y
 Successfully clear backlog for all topics of the example-tenant/example-ns
 ```
 
-## Unload namespaces
+## 卸载命名空间 
 
-This example shows how to unload `example-tenant/example-ns` from the current serving broker.
+如下示例显示如何从当前服务代理卸载 `example-tenant/example-ns`。 
 
-**Input**
+**输入**
 
 ```
 pulsarctl namespaces unload example-tenant/example-ns
 ```
 
-**Output**
+**输出**
 
 ```
 Unload namespace example-tenant/example-ns successfully
 ```
 
-## Delete namespaces
+## 删除命名空间 
 
-> **Note**
+> **注**
 > 
-> You cannot delete a namespace until no resource is associated with the namespace.
+> 只有在没有资源和命名空间关联时，方能将命名空间删除。
 
-This example shows how to delete `example-tenant/example-ns`.
+如下示例介绍如何删除 `example-tenant/example-ns`。
 
-**Input**
+**输入**
 
 ```
 pulsarctl namespaces delete example-tenant/example-ns
 ```
 
-**Output**
+**输出**
 
 ```
 Deleted example-tenant/example-ns successfully
 ```
 
-# Work with namespaces using StreamNative Console
+# 使用 StreamNative 控制台操作命名空间
 
-This section describes how to create and manage namespaces using the StreamNative Console. Before using the StreamNative Console to create and manage namespaces, you need to create a tenant. For details, see [work with tenants](/user-guides/admin/work-with-tenants.md).
+本节介绍如何使用 StreamNative 控制台创建和管理命名空间。使用 StreamNative 控制台创建和管理命名空间之前，首先需要创建一个租户。详细信息参见[关于租户的操作](/user-guides/admin/work-with-tenants.md)。
 
-## Create namespaces
+## 新建命名空间
 
-To create a namespace, follow these steps.
+按照如下步骤新建命名空间。 
 
-1. From the left navigation pane, click **Namespaces**.
+1. 从左侧导航窗格中，单击**命名空间**。 
 
-2. Click **Create Namespace**. A dialog box is displayed.
+2. 点击**新建命名空间**。出现一个对话框。
 
    ![](../../image/create-namespace.png)
 
-3. Enter a name for the namespace and then click **Confirm**. The namespace name is a string of up to 40 characters, supporting lowercase letters (a-z), numeric characters (0-9), and the special character hyphen (-).
+3. 输入命名空间的名称，然后点击**确认**。命名空间名称为最多 40 个字符的字符串，支持小写字母 (a-z)、数字字符 (0-9) 和特殊字符连字符 (-)。
 
-## View namespace statistics
+## 查看命名空间统计信息 
 
-To view statistics about a namespace, follow these steps.
+按照如下步骤操作，查看命名空间的统计信息。
 
-1. From the left navigation pane, click the **Namespaces**.
+1. 从左侧导航窗格中，单击**命名空间**。
 
-2. Select the **OVERVIEW** tab.
+2. 选择**概览**选项卡。
 
-3. Select the target tenant and namespace from the drop-down lists respectively. The following table lists statistics about the namespace.
+3. 分别从下拉列表中选择目标租户和命名空间。下表列出了有关命名空间的统计信息。
 
    ![](../../image/check-ns-1.png)
 
     <table>
     <tr>
     <td>
-    Item
+    项目
     </td>
-    <td>Description
+    <td>描述
     </td>
     </tr>
     <tr>
     <td>In Rate
     </td>
-    <td>The ingress rate of the namespace. 
+    <td>命名空间的入口速率。 
     </td>
     </tr>
     <tr>
     <td>Out Rate
     </td>
-    <td>The egress rate of the namespace.
+    <td>命名空间的出口速率。
     </td>
     </tr>
     <tr>
     <td>In Throughput 
     </td>
-    <td>The ingress throughput of the namespace.
+    <td>命名空间的入口通量。
     </td>
     </tr>
     <tr>
     <td>Out Throughput
     </td>
-    <td>The egress throughput of the namespace.
+    <td>命名空间的出口通量。
     </td>
     </tr>
     </table>
 
-4. Select the **TOPICS** tab to check the number of topics available for the namespace and statistics about topics. In addition, you can create new topics and update specific topics.
+4. 选择**主题**选项卡，检查可用于命名空间的主题数量和有关主题的统计信息。此外还可以创建新主题并更新特定主题。
 
-## Unload namespace bundles
+## 卸载命名空间 bundle
 
-For assignment, a namespace is sharded into a list of bundles, with each bundle comprising a portion of the overall hash range of the namespace. By default, four bundles are supported for each namespace.
+为了方便分配，命名空间被划分成一个 bundle 列表，每个 bundle 包含命名空间整体哈希范围的一部分。默认情况下，每个命名空间支持四个 bundle。
 
-To unload bundles for a namespace, follow these steps.
+按照以下步骤操作卸载命名空间的 bundle。
 
 1. From the left navigation pane, click **Namespaces**.
 
@@ -270,16 +270,16 @@ To configure policies for a namespace, follow these steps.
     <td>Configure the storage policy for the namespace.
 
     **Replication Factor**: configure the storage replication settings. <ul><li> Ensemble size: configure the number of bookies to be used when creating a ledger. <li> Write Quorum Size: configure the number of replicas to be stored for each message. <li> Ack Quorum Size: configure the number of responses to wait before claiming a message is guaranteed to be stored. </ul>
-**Mark-Delete Rate**: configure the number of mark-deletion calls that are allowed for each second. When the value is set to 0, the rate limiter is disabled. By default, the value is set to 0. </p>
-**Encryption Required**: enable/disable message encryption for the namespace. <ul><li> Enabled: enable message encryption for the namespace. <li> Disabled: disable message encryption for the namespace. </ul>
-**Deduplication**: enable/disable deduplication for the namespace. <ul><li> Enabled: enable deduplication for the namespace. <li> Disabled: disable deduplication for the namespace.</ul>
+   **Mark-Delete Rate**: configure the number of mark-deletion calls that are allowed for each second. When the value is set to 0, the rate limiter is disabled. By default, the value is set to 0. </p>
+   **Encryption Required**: enable/disable message encryption for the namespace. <ul><li> Enabled: enable message encryption for the namespace. <li> Disabled: disable message encryption for the namespace. </ul>
+   **Deduplication**: enable/disable deduplication for the namespace. <ul><li> Enabled: enable deduplication for the namespace. <li> Disabled: disable deduplication for the namespace.</ul>
     </td>
     </tr>
     <tr>
     <td>Backlog
     </td>
     <td>Configure the backlog policy for the namespace. 
-    
+   
     **Backlog Quota Size**: configure the maximum backlog quota (in bytes) allowed for the namespace. The backlog quota size must be smaller than 1000000000 bytes. By default, it is set to -1073741824 bytes.</p> **Backlog Retention Policy**: configure the backlog retention policy. <ul><li> consumer_backlog_eviction: the broker starts discarding backlog messages. <li>producer_exception: the broker disconnects with the client by giving an exception. <li>producer_request_hold: the broker holds but does not persist producer request payload.</ul>
     </td>
     </tr>

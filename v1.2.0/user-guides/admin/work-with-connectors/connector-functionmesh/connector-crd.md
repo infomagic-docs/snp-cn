@@ -48,7 +48,7 @@ Pulsar Function 的输出主题。下表列出了 `Output` 的可用选项。
 | `Topics` | Pulsar Function 的输出主题（如果未指定，则不写入输出）。     |
 | `SinkSerdeClassName` | 输出主题到 SerDe 类名称的映射（作为 JSON 字符串）。          |
 | `SinkSchemaType` | 内置 scheme 类型或自定义 scheme 类名称，用于 function 发送的消息。 |
-| `ProducerConf` | 生产者的规格。可用的选项： <br />- `MaxPendingMessages`：待处理信息的最大数量。 <br />- `MaxPendingMessagesAcrossPartitions`：各个分区的最大未决信息数量。<br />- `UseThreadLocalProducers`：配置生产者是否使用一个线程。 <br />- `CryptoConfig`：生产者的加密配置。 <br />- `BatchBuilder`：支持基于 key 的批处理器。 |
+| `ProducerConf` | 生产者的规格。可用的选项： <br />- `MaxPendingMessages`：待处理消息的最大数量。 <br />- `MaxPendingMessagesAcrossPartitions`：各个分区的最大未决消息数量。<br />- `UseThreadLocalProducers`：配置生产者是否使用一个线程。 <br />- `CryptoConfig`：生产者的加密配置。 <br />- `BatchBuilder`：支持基于 key 的批处理器。 |
 | `CustomSchemaSinks` | 输出主题到 Schema 类名称的映射（作为 JSON 字符串）。 |
 
 ## 资源
