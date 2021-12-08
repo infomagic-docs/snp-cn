@@ -282,4 +282,4 @@ Python 函数支持 One Python 文件或 ZIP 文件。
     COPY example-function.jar /pulsar/
     ```
 
-然后将 Function Docker 镜像推送到镜像注册中心（如 [Docker Hub](https://hub.docker.com/)，或任意私有的注册中心），并使用Function Docker 镜像来配置并将 Function 提交到 Pulsar 集群。
+然后将 Function Docker 镜像推送到镜像注册中心（如 [Docker Hub](https://hub.docker.com/)，或任意私有的注册中心），并使用 Function Docker 镜像来配置并将 Function 提交到 Pulsar 集群。

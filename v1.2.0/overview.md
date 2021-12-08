@@ -90,9 +90,9 @@ Pulsar 的主要组件包括：
 
 # StreamNative Platform 与 Apache Pulsar 主要功能对比
 
-StreamNative Platform 的每个版本都包含最新版本的 Pulsar 的全部功能与特性，并包含 StreamNative 额外的工具和服务。这些工具和服务让创建和管理云原生批流融合平台变得更加简单。StreamNative Platform 同时包含了社区版和商业版的功能，可以很好地补充并加强你的 Pulsar 部署。
+StreamNative Platform 的每个版本都包含最新版本的 Pulsar 的全部功能与特性，并包含 StreamNative 额外的工具和服务。这些工具和服务让创建和管理云原生批流融合平台变得更加简单。StreamNative Platform 同时包含了社区版和商业版的功能，可以很好地补充并加强 Pulsar 部署。
 
-下表为 Apache Pulsar 和 StreamNative Platform 功能对比。
+下表为 Apache Pulsar 和 StreamNative Platform 的功能对比。
 
 | 功能 | Apache Pulsar | StreamNative Platform |
 |----------|---------------|-----------------------|

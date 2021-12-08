@@ -429,7 +429,7 @@ Apache Pulsar Grafana 仪表板是一个开源的可视化工具，包含独有�
    * 帐户：pulsar
    * 密码：pulsar
 
-   现在你可以用 Grafana 仪表板查看组件的详细指标了，如 bookie、JVM、消息、节点、代理、ZooKeeper、Pulsar 主题等。
+   现在你可以用 Grafana 仪表板查看组件的详细指标了，如 bookie、JVM、消息、节点、代理（proxy）、ZooKeeper、Pulsar 主题等。
 
 # 步骤 8：卸载
 
@@ -459,4 +459,4 @@ Apache Pulsar Grafana 仪表板是一个开源的可视化工具，包含独有�
 
 >**注意**
 >
-> 如想删除 PVC 或 Secret，需要将它们同时删除。否则，你将无法重新安装 StreamNative Platform。建议谨慎删除 PVC 或 Secret，因为一旦删除，一些重要信息将无法恢复。
+> 如想删除 PVC 或 Secret，需要将它们同时删除。否则将无法重新安装 StreamNative Platform。建议谨慎删除 PVC 或 Secret，因为一旦删除，将无法恢复一些重要信息。
