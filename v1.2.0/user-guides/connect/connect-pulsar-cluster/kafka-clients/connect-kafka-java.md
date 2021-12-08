@@ -1,5 +1,5 @@
 ---
-title: Connect to Pulsar cluster using Kafka Java client
+title: 使用 Kafka Java 客户端连接 Pulsar 集群
 id: connect-kafka-java
 category: user-guides
 ---
@@ -78,7 +78,7 @@ Currently, StreamNative Platform supports [Kafka Client v1.0.0 - v2.6.0](https:/
 
        ```bash
        cd kafka_2.11-2.2.0
-       ```     
+       ```
 
    2. Start a Kafka producer and send a message from the Kafka producer..
 

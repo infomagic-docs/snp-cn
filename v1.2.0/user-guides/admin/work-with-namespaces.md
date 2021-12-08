@@ -1,5 +1,5 @@
 ---
-title: 关于命名空间的操作
+title: 关于命名空间的操作 
 id: work-with-namespaces
 category: user-guides
 ---
@@ -98,7 +98,7 @@ Deleted example-tenant/example-ns successfully
 
 按照如下步骤新建命名空间。 
 
-1. 从左侧导航窗格中，单击**命名空间**。 
+1. 从左侧导航窗格中，点击**命名空间**。 
 
 2. 点击**新建命名空间**。出现一个对话框。
 
@@ -226,11 +226,11 @@ Deleted example-tenant/example-ns successfully
 
 
     <li>消费：授予/撤销消费操作。 
-
+    
     <li>生产：授予/撤销生产操作。 
-
+    
     <li>functions：授予/撤销 Pulsar function操作。
-
+    
     <p>
     点击<strong>添加角色</strong>将一个或多个服务账号添加为命名空间的管理员。
     <p>
@@ -247,9 +247,9 @@ Deleted example-tenant/example-ns successfully
 
 
     <li>None：Pulsar 客户端可以使用任何允许的订阅名称连接到集群。 
-
+    
     <li>前缀：Pulsar 客户端只能使用以角色名称为前缀的订阅名称来订阅消息。
-
+    
     <p>
     默认情况下设置为<em>None</em>。
     </li>
@@ -260,7 +260,7 @@ Deleted example-tenant/example-ns successfully
     <td>储存
     </td>
     <td>配置命名空间的储存策略。 
-
+    
     **副本因子**：配置存储复制设置。<ul><li> Ensemble size：配置创建 ledger 时要使用的 bookie 的数量。<li> Write Quorum Size：配置要为每条消息存储的副本数。<li> Ack Quorum Size：配置在声明消息保证被存储之前等待的响应数量。</ul>
    **Mark-Delete Rate**：配置每秒允许的 mark-deletion 的调用次数。当该值设置为 0 时，速率限制器被禁用。默认情况下该值设置为 0。 </p>
    **需要加密**：为命名空间启用/禁用消息加密。<ul><li> 启用：为命名空间启用消息加密。<li> 禁用：为命名空间禁用消息加密。</ul>
@@ -279,11 +279,11 @@ Deleted example-tenant/example-ns successfully
     <td>Schema
     </td>
     <td>为命名空间配置 schema 策略。 
-
+    
     <ul>
-
+    
     <li>AutoUpdate 策略：为命名空间配置 schema 的自动更新策略。
-
+    
     <li>Schema 有效性：为没有 schema 的生产者启用/禁用架构验证。如果禁用，则不允许没有 schema 的生产者向具有 schema 的主题生产消息。
     </li>
     </ul>
@@ -293,19 +293,19 @@ Deleted example-tenant/example-ns successfully
     <td>Cleanup 策略
     </td>
     <td>为命名空间配置 cleanup 策略。 
-
+    
     <ul>
-
+    
     <li>消息 TTL（秒）：配置消息 TTL（秒）。在 TTL 周期内，如果没有任何消费者消费该消息，当 TTL 周期结束后，该消息被标记为“已消费”。
-
+    
     <li>保留大小（字节）：配置保留大小。该字段仅适用于所有订阅确认的消息。保留大小必须小于 1000 MB。 默认情况下设置为 0。
-
+    
     <li>保留周期（分钟）：配置保留周期。该字段仅适用于所有订阅确认的消息。默认情况下设置为 0。 
-
+    
     <li>压缩阈值（字节）：配置压缩主题的阈值。当达到阈值时自动触发压缩。默认情况下设置为 0。 
-
+    
     <li>卸载阈值（字节）：配置阈值以卸载消息。当达到阈值时，消息会自动卸载到分层存储。默认情况下设置为 -1。 
-
+    
     <p>
     卸载删除延迟（毫秒）：配置删除从 BookKeeper 卸载 ledger 前等待的时间（以毫秒为单位）。当该值设置为负值时，禁用卸载删除。
     </li>
@@ -320,9 +320,9 @@ Deleted example-tenant/example-ns successfully
 
 
     <li>最大生产者数量（基于主题）：配置每个主题支持的最大生产者数量。 
-
+    
     <li>最大消费者数量（基于主题）：配置每个主题支持的最大消费者数量。 
-
+    
     <li>最大消费者数量（基于订阅）：每个订阅支持的最大消费者的数量。
     </li>
     </ul>
@@ -332,11 +332,11 @@ Deleted example-tenant/example-ns successfully
     <td rowspan="3" >派发速率
     </td>
     <td>派发速率（基于主题）：配置基于主题的派发速率。  
-
+    
     <ul>
-
+    
     <li>吞吐量（字节/秒）：配置主题中的派发速率（单位为字节）。
-
+    
     <li>速率（消息/秒）：配置主题中消息的派发速率。时间周期（秒）：配置调度速率周期。
     </li>
     </ul>
@@ -344,13 +344,13 @@ Deleted example-tenant/example-ns successfully
     </tr>
     <tr>
     <td>派发速率（基于订阅）：根据订阅模式配置派发速率。 
-
+    
     <ul>
-
+    
     <li>吞吐量（字节/秒）：配置订阅的派发速率（单位为字节）。
-
+    
     <li>速率（消息/秒）：配置订阅消息的派发速率。 
-
+    
     <li>时间周期（秒）：配置派发速率周期。 
     </li>
     </ul>
@@ -358,11 +358,11 @@ Deleted example-tenant/example-ns successfully
     </tr>
     <tr>
     <td>派发速率（基于消费者）：配置消费者订阅主题的速率。 
-
+    
     <ul>
-
+    
     <li>吞吐量（字节/秒）：配置消费者订阅的主题的吞吐量。
-
+    
     <li>速率（消息/秒）：配置消费者订阅的主题的速率。
     </li>
     </ul>
@@ -380,8 +380,8 @@ Deleted example-tenant/example-ns successfully
 
 3. 分别从下拉列表中选择目标租户和命名空间。
 
-4. 向下滚动页面，然后点击**删除命名空间**。出现对话框显示：“您是否确认希望删除？”
+4. 向下滚动页面，然后点击**删除命名空间**。出现对话框显示：*“您是否确认希望删除？”*
 
    ![](../../image/delete-ns.png)
 
-5. 输入命名空间的名称，然后单击**确定**。
+5. 输入命名空间的名称，然后点击**确定**。
