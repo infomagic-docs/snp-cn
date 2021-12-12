@@ -15,7 +15,6 @@ StreamNative Platform 安全模型具有灵活的设计，支持三种安全选�
 如果不在 StreamNative Platform 上启用 TLS 和授权安全，最好不要将 Pulsar 集群暴露在公共互联网上。
 
 本指南包括如下内容：
-
 - [认证和授权](/operator-guides/configure/security/security-auth.md)
 - [在 StreamNative Platform 组件上启用 TLS](/operator-guides/configure/security/network-encryption/tls-proxy.md)
 - [在负载平衡器上启用 TLS](/operator-guides/configure/security/network-encryption/tls-load-balancer.md)
