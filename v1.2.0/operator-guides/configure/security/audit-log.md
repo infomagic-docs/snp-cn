@@ -18,9 +18,9 @@ category: operator-guides
 审计记录器使用以下默认设置将审计日志写入 Pulsar 主题：
 
 - 审计日志的主题名为：`persistent://sn/system/audit_log_all`。
-- 审核日志仅捕获 `管理`类别中的事件。  
+- 审核日志仅捕获 `管理`类别中的事件。
 
-为了定制 Pulsar 审计日志，你可以在 `values.yaml` 文件中的 `PULSAR_PREFIX_snAuditLogConfig` 部分进行配置。 
+为了定制 Pulsar 审计日志，你可以在 `values.yaml` 文件中的 `PULSAR_PREFIX_snAuditLogConfig` 部分进行配置。
 
 例如，要根据权限设置将审计日志写入不同的 Pulsar 主题，可以在 `PULSAR_PREFIX_snAuditLogConfig` 部分添加以下配置。然后在授权成功的情况，日志被写入 `persistent://sn/system/audit_log_allowed`；如授权失败，则写入 `persistent://sn/system/audit_log_denied`。
 
