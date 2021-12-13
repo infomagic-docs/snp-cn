@@ -6,14 +6,14 @@ category: operator-guides
 
 StreamNative Platform 支持传输层安全（TLS）协议，一种行业标准的加密协议，以保护 StreamNative Platform 组件的网络通信。
 
-TLS 依靠密钥和证书来建立可信任连接。可以在 Pulsar proxy、控制中心和 KoP broker 终止 TLS 。本节介绍如何为 StreamNative Platform 组件启用 TLS 加密。
+TLS 依靠密钥和证书来建立可信任连接。可以在 Pulsar proxy、控制中心和 KoP broker 来终止 TLS 。本节介绍如何为 StreamNative Platform 组件启用 TLS 加密。
 
-为了启用 TLS 加密，StreamNative Platform 支持以下机制：
+StreamNative Platform 支持以下机制来启用 TLS 加密：
 
 - 自动生成证书：用 [cert-manager](https://cert-manager.io/docs/) 自动生成证书。
-- 手动生成证书：由用户生成私钥、公钥和证书授权机构。
+- 手动生成证书：由用户生成私钥、公钥和证书颁发机构。
 
-对于不需要使用自己的服务器证书的场景，我们建议使用自动生成证书的功能。
+对于不需要使用自己的服务器端证书的场景，我们建议使用自动生成证书的方式。
 
 # 使用 cert-manager 启用 TLS
 
@@ -37,11 +37,10 @@ Cert-manager 将证书和证书颁发者作为资源类型添加到 Kubernetes �
 
 	```
 	tls:
-
  	 enabled: true
  	 proxy:
  	   enabled: true
- 	
+
  	certs:
  	 internal_issuer:
  	   enabled: true
@@ -92,7 +91,7 @@ Cert-manager 将证书和证书颁发者作为资源类型添加到 Kubernetes �
 
 要使用公共颁发者（公共签名，let's encrypt）生成证书，请按如下步骤操作：
 
-1. 为 JKS cert 创建密码密钥。 
+1. 为 JKS cert 创建密码密钥。
 
 	```
 	kubectl create secret generic cert-jks-passwd --from-literal=password=passwd -n KUBERNETES_NAMESPACE
@@ -176,9 +175,9 @@ Cert-manager 将证书和证书颁发者作为资源类型添加到 Kubernetes �
 
 :::
 
-# 使用手动生成的证书在 Pulsar proxy 上启用 TLS 
+# 使用手动生成的证书在 Pulsar proxy 上启用 TLS
 
-如不使用 cert-manager，要在 Pulsar proxy 上启用 TLS，就需要先手动生成证书。
+要在 Pulsar proxy 上启用 TLS（不使用 cert-manager），就需要先手动生成证书。
 
 要在 Pulsar proxy 上启用 TLS，请完成以下步骤：
 
@@ -316,7 +315,7 @@ Cert-manager 将证书和证书颁发者作为资源类型添加到 Kubernetes �
 
 # 使用手动生成的证书在 KoP 上启用 TLS
 
-如不使用 cert-manager，要在 KoP 上启用 TLS，首先要为 KoP 生成 SSL 密钥和证书，然后为 KoP 证书和密码创建 Kubernetes Secret。
+要在 KoP 上启用 TLS（不使用 cert-manager），首先要为 KoP 生成 SSL 密钥和证书，然后为 KoP 证书和密码创建 Kubernetes Secret。
 
 ## 为 KoP 生成 SSL 密钥和证书 
 
@@ -369,7 +368,7 @@ Cert-manager 将证书和证书颁发者作为资源类型添加到 Kubernetes �
         openssl x509 -req -CA ca-cert -CAkey ca-key -in cert-file -out cert-signed -days <validity> -CAcreateserial -passin pass:<ca-password>
         ```
 
-    3. 将 CA 的证书和已签名的证书都导入到 broker 的 keystore（密钥库） 中。
+    3. 将 CA 的证书和已签名的证书都导入到 broker 的 keystore（密钥库）中。
 
         ```
         keytool -keystore server.keystore.jks -alias CARoot -import -file ca-cert
