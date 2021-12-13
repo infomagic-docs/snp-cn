@@ -1,32 +1,32 @@
 ---
-title: 在负载平衡器上启用 TLS 
+title: 在负载均衡器上启用 TLS 
 id: tls-load-balancer
 category: operator-guides
 ---
 
-StreamNative Platform 支持用 [AWS Certificate Manager (ACM)](https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html) 启用 TLS。当你想在负载均衡器上执行 TLS 终止时，可以使用 ACM 证书。ACM 处理创建、存储和更新公共和私人 SSL/TLS X.509 证书和密钥的复杂性，以保护 AWS 网站和应用程序。
+StreamNative Platform 支持用 [AWS Certificate Manager (ACM)](https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html) 启用 TLS。当你想在负载均衡器上终止 TLS 时，可以使用 ACM 证书。ACM 可以处理各种复杂情况，包括创建、存储和更新公共和私人 SSL/TLS X.509 证书和密钥，以保护 AWS 网站和应用程序。
 
-负载平衡器通过 TCP 协议将流量卸载到后端服务。 
+负载均衡器通过 TCP 协议将流量卸载到后端服务。
 
-* 一个用于 Pulsar 代理的负载平衡器，端口为 `6651/443`。 
+* 一个用于 Pulsar porxy 的负载均衡器，端口为 `6651/443`。 
   * DNS 名为 `data.pulsar.example.local`
-* 一个用于 nginx 入口控制器的负载平衡器，端口为 `443`。 
+* 一个用于 nginx ingress 控制器的负载均衡器，端口为 `443`。 
   * DNS 名为 `admin.pulsar.example.local`
-* 一个用于 istio 入口的负载平衡器（连接到 KoP broker），端口为 `9093`。 
+* 一个用于 istio ingress（连接到 KoP broker）的负载均衡器，端口为 `9093`。 
   * DNS 名为 `messaging.pulsar.example.local`
 
-> **注**     
-> 使用 ACM 启用 TLS 不适用于 KoP，因为 KoP 需要 TLS 服务器名称指示 (SNI) 来路由 broker 端而不是负载均衡器端的 TLF 来终止流量。
+> **注意**
+> 通过 ACM 启用 TLS 不适用于 KoP，因为 KoP 需要 TLS 服务器名称指示（SNI）来路由流量，这需要在 broker 端而不是在负载均衡器端终止 TLS。
 
-要在 ACM 中使用证书，请完成以下步骤。
+要使用 ACM 证书，需完成以下步骤：
 
-1. [从 ACM 申请公共证书](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-request-public.html) 获取以下域名，并获取证书的亚马逊资源名称 (Amazon Resource Name, ARN)。
+1. 为下面的域名[从 ACM 申请公共证书](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-request-public.html)，并获取证书的 Amazon 资源名称（ARN）。
 
 	```
 	*.pulsar.example.local
 	```
 
-2. 在 YAML 文件中启用域，配置和注释，并使用如上获得的 ARN。
+2. 在 YAML 文件中启用域，配置注解，并使用上一步中获得的 ARN。
 
    ```
    tls:
@@ -77,7 +77,7 @@ StreamNative Platform 支持用 [AWS Certificate Manager (ACM)](https://docs.aws
      external_domain_scheme: https://
    ```
 
-3. 通过重新启动 Pulsar 代理来应用更改。 
+3. 重新启动 Pulsar proxy 使更改生效。
 
     ```
     helm upgrade -f /path/to/your/file.yaml CLUSTER_NAME $PULSAR_CHART/
