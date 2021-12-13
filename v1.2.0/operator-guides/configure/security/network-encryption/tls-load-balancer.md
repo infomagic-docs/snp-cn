@@ -4,15 +4,15 @@ id: tls-load-balancer
 category: operator-guides
 ---
 
-StreamNative Platform 支持用 [AWS Certificate Manager (ACM)](https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html) 启用 TLS。当你想在负载均衡器上终止 TLS 时，可以使用 ACM 证书。ACM 可以处理各种复杂情况，包括创建、存储和更新公共和私人 SSL/TLS X.509 证书和密钥，以保护 AWS 网站和应用程序。
+StreamNative Platform 支持用 [AWS Certificate Manager（ACM）](https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html)启用 TLS。当你想在负载均衡器上终止 TLS 时，可以使用 ACM 证书。ACM 可以处理各种复杂情况，包括创建、存储和更新公共和私人 SSL/TLS X.509 证书和密钥，以保护 AWS 网站和应用程序。
 
 负载均衡器通过 TCP 协议将流量卸载到后端服务。
 
-* 一个用于 Pulsar porxy 的负载均衡器，端口为 `6651/443`。 
+* 一个用于 Pulsar porxy 的负载均衡器，端口为 `6651/443`。
   * DNS 名为 `data.pulsar.example.local`
-* 一个用于 nginx ingress 控制器的负载均衡器，端口为 `443`。 
+* 一个用于 nginx ingress 控制器的负载均衡器，端口为 `443`。
   * DNS 名为 `admin.pulsar.example.local`
-* 一个用于 istio ingress（连接到 KoP broker）的负载均衡器，端口为 `9093`。 
+* 一个用于 istio ingress（连接到 KoP broker）的负载均衡器，端口为 `9093`。
   * DNS 名为 `messaging.pulsar.example.local`
 
 > **注意**
